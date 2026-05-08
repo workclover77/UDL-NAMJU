@@ -18,7 +18,6 @@
             --text-main: #1e293b;    /* 명확한 텍스트 */
             --slide-width: 1280px;
             --slide-height: 720px;
-            --zoom-factor: 1;        /* 기본 줌 */
         }
 
         * { box-sizing: border-box; }
@@ -26,20 +25,18 @@
         /* 2. 레이아웃 및 해상도 최적화 (2560x1600 태블릿 대응) */
         body {
             margin: 0; padding: 0;
-            background-color: #334155; /* 슬라이드 밖 배경색 */
+            background-color: #334155; 
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh; font-family: 'Nanum Gothic', sans-serif;
             overflow: hidden;
             transition: font-size 0.3s ease;
         }
 
-        /* 큰 글씨 모드 적용 시 */
         body.zoom-mode {
             --text-size-p: 32px;
             --text-size-h2: 56px;
         }
 
-        /* 고정된 슬라이드 프레임 */
         #slide-master {
             width: var(--slide-width);
             height: var(--slide-height);
@@ -96,7 +93,7 @@
         .nav-item:hover { background: #f1f5f9; }
         .nav-item.active { background: #eef2ff; color: var(--primary); border-left-color: var(--primary); }
 
-        /* 4. 타이포그래피 (UDL 맞춤형) */
+        /* 4. 타이포그래피 */
         h1, h2, h3 { font-family: 'Gaegu', cursive; margin: 0; color: var(--text-main); }
         .slide-title { font-size: 52px; margin-bottom: 40px; color: var(--primary); border-bottom: 4px solid var(--secondary); display: inline-block; }
         p, li { font-size: 28px; line-height: 1.6; color: #334155; word-break: keep-all; margin: 0 0 15px 0; }
@@ -108,15 +105,17 @@
             border: none; cursor: pointer; transition: 0.3s;
         }
         .btn-primary { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3); }
-        .btn-nav { font-size: 24px; padding: 12px 30px; border-radius: 12px; background: #e2e8f0; color: #475569; border: none; cursor: pointer; }
+        .btn-primary:active { transform: scale(0.95); }
+        
+        .btn-nav { font-size: 24px; padding: 12px 30px; border-radius: 12px; background: #e2e8f0; color: #475569; border: none; cursor: pointer; transition: 0.2s; }
         .btn-nav:hover { background: #cbd5e1; }
         .btn-nav.next { background: var(--primary); color: white; }
 
         .name-input {
             padding: 20px; font-size: 32px; border-radius: 15px; border: 4px solid #cbd5e1;
-            width: 400px; text-align: center; margin-bottom: 40px; outline: none;
+            width: 400px; text-align: center; margin-bottom: 40px; outline: none; transition: 0.3s;
         }
-        .name-input:focus { border-color: var(--primary); }
+        .name-input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(79, 70, 229, 0.2); }
 
         .quiz-option {
             background: white; border: 3px solid #e2e8f0; padding: 25px; border-radius: 20px;
@@ -126,12 +125,13 @@
         .quiz-option:hover { border-color: var(--primary); transform: translateX(10px); }
         
         .feedback-box {
-            display: none; padding: 25px; border-radius: 20px; font-size: 26px; font-weight: bold; margin-top: 20px;
+            display: none; padding: 25px; border-radius: 20px; font-size: 26px; font-weight: bold; margin-top: 20px; animation: popIn 0.3s ease-out;
         }
+        @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         .feedback-box.correct { background: #dcfce7; color: #166534; border: 2px solid #22c55e; }
         .feedback-box.wrong { background: #fee2e2; color: #991b1b; border: 2px solid #ef4444; }
 
-        /* 단어 도움말 (Tooltip) */
+        /* 단어 도움말 */
         .word-help {
             color: var(--primary); font-weight: bold; cursor: help; border-bottom: 3px dashed var(--primary);
             position: relative; display: inline-block;
@@ -145,8 +145,8 @@
 
         /* 축하 애니메이션 */
         #confetti { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2000; display: none; }
-        .emoji-fall { position: absolute; font-size: 40px; animation: emojiFall 2s linear forwards; }
-        @keyframes emojiFall { 0% { top: -50px; opacity: 1; } 100% { top: 100%; opacity: 0; } }
+        .emoji-fall { position: absolute; font-size: 40px; animation: emojiFall 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+        @keyframes emojiFall { 0% { top: -50px; opacity: 1; transform: scale(0.5) rotate(0deg); } 100% { top: 100%; opacity: 0; transform: scale(1.5) rotate(360deg); } }
 
         /* 6. 레이아웃 템플릿 */
         .content-area { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; width: 100%; }
@@ -164,6 +164,10 @@
         .timeline-dot { width: 100px; height: 100px; background: white; border: 6px solid var(--primary); border-radius: 50%; margin: 0 auto 20px; display: flex; justify-content: center; align-items: center; font-size: 45px; }
 
         .footer-nav { height: 80px; display: flex; justify-content: space-between; align-items: center; padding-top: 20px; border-top: 1px solid #f1f5f9; }
+
+        /* 시작 환영 모션 */
+        .welcome-motion { animation: pulseHeart 1.5s infinite; color: var(--accent) !important; }
+        @keyframes pulseHeart { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -174,8 +178,7 @@
         <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
         <aside class="sidebar" id="sidebar">
             <h2 style="font-size: 40px; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 10px;">학습 목차</h2>
-            <div id="nav-list">
-                </div>
+            <div id="nav-list"></div>
         </aside>
 
         <header id="toolbar" style="display: none;">
@@ -188,12 +191,12 @@
         </header>
 
         <div class="slide-container active" id="slide1">
-            <div class="content-area" style="text-align: center;">
-                <h1 style="font-size: 100px; margin-bottom: 20px;">🗺️ 우리 고장 여행</h1>
-                <p style="font-size: 36px; margin-bottom: 40px;">반가워요! 당신의 이름을 알려주세요.</p>
-                <input type="text" id="name-input-field" class="name-input" placeholder="여기에 이름을 쓰세요" value="">
+            <div class="content-area" style="text-align: center;" id="welcome-area">
+                <h1 id="welcome-title" style="font-size: 100px; margin-bottom: 20px;">🗺️ 우리 고장 여행</h1>
+                <p id="welcome-subtitle" style="font-size: 36px; margin-bottom: 40px;">안녕! 우리 고장 여행을 시작할까?<br>이름을 알려줘!</p>
+                <input type="text" id="name-input-field" class="name-input" placeholder="이름 쓰기" value="">
                 <div>
-                    <button class="btn-action btn-primary" onclick="startCourse()">여행 시작하기 <i class="fa-solid fa-arrow-right"></i></button>
+                    <button id="start-btn" class="btn-action btn-primary" onclick="startCourse()">시작하기 <i class="fa-solid fa-rocket"></i></button>
                 </div>
             </div>
         </div>
@@ -201,7 +204,7 @@
         <div class="slide-container" id="slide2">
             <div class="content-area" style="text-align: center;">
                 <h2 class="slide-title">오늘의 공부 약속</h2>
-                <p style="font-size: 40px;"><span class="student-name">친구</span>, 오늘 우리는<br>이 두 가지를 꼭 기억할 거예요!</p>
+                <p style="font-size: 40px;"><span class="student-name">친구</span>, 오늘 우리는<br>이 두 가지를 꼭 기억할 거야!</p>
                 <div style="margin-top: 40px; text-align: left; display: inline-block;">
                     <p>✅ 1. <strong>'고장'</strong>이 무엇인지 알아봐요.</p>
                     <p>✅ 2. <strong>'디지털 영상 지도'</strong>의 특징을 배워요.</p>
@@ -219,7 +222,7 @@
                 <div class="two-column">
                     <div style="background: #eef2ff; padding: 40px; border-radius: 25px; border-left: 10px solid var(--primary);">
                         <p style="font-size: 32px;"><strong>'고장'</strong>은 여러 사람들이<br>함께 <strong>모여 사는 곳</strong>을 말해요.</p>
-                        <p><span class="student-name">친구</span>가 사는 아파트와 골목길이 모두 고장의 모습이랍니다.</p>
+                        <p><span class="student-name">친구</span>가 걷는 골목길과 동네가 모두 고장의 모습이랍니다.</p>
                     </div>
                     <div class="image-wrapper">
                         <img src="http://googleusercontent.com/image_collection/image_retrieval/4810897283581562099" alt="우리 동네의 평화로운 모습">
@@ -243,7 +246,7 @@
                             <li>물건을 사는 <strong>시장</strong></li>
                             <li>편안히 쉬는 <strong>공원</strong></li>
                         </ul>
-                        <p><span class="student-name">친구</span>는 어디를 제일 좋아하나요?</p>
+                        <p><span class="student-name">친구</span>는 동네에서 어디를 제일 좋아하나요?</p>
                     </div>
                     <div class="image-wrapper">
                         <img src="http://googleusercontent.com/image_collection/image_retrieval/10131441762442131618" alt="활기찬 시장의 모습" style="object-fit: contain;">
@@ -259,7 +262,7 @@
         <div class="slide-container" id="slide5" style="background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('http://googleusercontent.com/image_collection/image_retrieval/4810897283581562099'); background-size: cover; background-position: center;">
             <div class="content-area" style="text-align: center;">
                 <h2 style="font-size: 70px; margin-bottom: 30px; color: var(--primary);">영상을 보며 여행해요! 📺</h2>
-                <p style="font-size: 32px; background: white; padding: 20px; display: inline-block; border-radius: 15px;">선생님이 준비한 2분 영상을 함께 감상해 볼까요?</p>
+                <p style="font-size: 32px; background: white; padding: 20px; display: inline-block; border-radius: 15px;"><span class="student-name">친구</span>야, 선생님이 준비한 2분 영상을 함께 감상해 볼까?</p>
                 <div style="margin-top: 40px; width: 800px; height: 350px; background: #000; margin: 40px auto; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white;">
                     <p style="font-size: 24px;"><i class="fa-brands fa-youtube" style="font-size: 60px; color: red; display: block; margin-bottom: 20px;"></i> [ 여기에 유튜브 임베딩 코드를 넣어주세요 ]</p>
                 </div>
@@ -273,12 +276,12 @@
         <div class="slide-container" id="slide6">
             <h2 class="slide-title">깜짝 퀴즈 타임! 💡</h2>
             <div class="content-area">
-                <p style="font-size: 36px; margin-bottom: 40px;"><strong>Q. 사람들이 모여서 함께 사는 곳을 무엇이라고 부를까요?</strong></p>
-                <div class="quiz-option" onclick="checkQuiz(this, false, '아쉽네요! 사과는 맛있는 과일이에요. 동네는 고장이라고 불러요.')">
+                <p style="font-size: 36px; margin-bottom: 40px;"><span class="student-name">친구</span>, 맞혀봐! <strong>사람들이 모여서 함께 사는 곳을 무엇이라고 부를까?</strong></p>
+                <div class="quiz-option" onclick="checkQuiz(this, false, '사과는 맛있는 과일이야. 동네는 고장이라고 불러.')">
                     <span style="background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">1</span>
                     맛있는 사과
                 </div>
-                <div class="quiz-option" onclick="checkQuiz(this, true, '정답이에요! 참 잘했어요. 사람들은 고장에서 함께 모여 살아요.')">
+                <div class="quiz-option" onclick="checkQuiz(this, true, '정답을 맞췄어! 사람들은 고장에서 함께 모여 살아.')">
                     <span style="background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">2</span>
                     우리 고장
                 </div>
@@ -294,7 +297,7 @@
             <div class="content-area" style="text-align: center;">
                 <h2 style="font-size: 80px; color: var(--accent);">하늘에서 고장을 봐요! 🛰️</h2>
                 <hr style="width: 150px; border: 4px solid var(--accent); margin: 40px auto;">
-                <p style="font-size: 32px;"><span class="student-name">친구</span>, 인공위성으로 찍은 사진 지도를<br>공부할 준비 됐나요?</p>
+                <p style="font-size: 32px;"><span class="student-name">친구</span>야, 인공위성으로 찍은 사진 지도를<br>같이 볼까?</p>
             </div>
             <div class="footer-nav">
                 <button class="btn-nav" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i> 이전</button>
@@ -358,7 +361,7 @@
                     </div>
                     <div>
                         <p style="font-size: 32px;"><strong>전통 시장</strong>은 물건을 사고파는<br>정겨운 곳이에요.</p>
-                        <p><span class="student-name">친구</span>는 시장에서 무엇을 먹어보고 싶나요? 상상해서 말해 보세요!</p>
+                        <p><span class="student-name">친구</span>는 시장에서 무엇을 먹어보고 싶어? 선생님한테 말해줘!</p>
                     </div>
                 </div>
             </div>
@@ -371,12 +374,12 @@
         <div class="slide-container" id="slide12">
             <h2 class="slide-title">누가 도와줄까요? 🚑</h2>
             <div class="content-area">
-                <p style="font-size: 36px; margin-bottom: 40px;"><strong>Q. 몸이 아프거나 다쳤을 때 치료를 도와주는 곳은 어디일까요?</strong></p>
-                <div class="quiz-option" onclick="checkQuiz(this, false, '아쉽네요! 꽃집은 예쁜 꽃을 선물하는 곳이에요.')">
+                <p style="font-size: 36px; margin-bottom: 40px;"><span class="student-name">친구</span>, <strong>몸이 아프거나 다쳤을 때 치료를 도와주는 곳은 어디일까?</strong></p>
+                <div class="quiz-option" onclick="checkQuiz(this, false, '꽃집은 예쁜 꽃을 선물하는 곳이야.')">
                     <span style="background: var(--accent); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">1</span>
                     꽃집
                 </div>
-                <div class="quiz-option" onclick="checkQuiz(this, true, '딩동댕! 정답이에요. 병원에 가면 의사 선생님이 우리를 고쳐주세요.')">
+                <div class="quiz-option" onclick="checkQuiz(this, true, '정답이야! 병원에 가면 의사 선생님이 우리를 고쳐주셔.')">
                     <span style="background: var(--accent); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">2</span>
                     병원
                 </div>
@@ -408,17 +411,17 @@
         <div class="slide-container" id="slide14">
             <h2 class="slide-title">오늘 공부는 어땠나요?</h2>
             <div class="content-area" style="text-align: center;">
-                <p style="font-size: 32px; margin-bottom: 50px;"><span class="student-name">친구</span>, 오늘 지리 공부 재미있었나요?<br>자신의 마음을 클릭해 보세요!</p>
+                <p style="font-size: 32px; margin-bottom: 50px;"><span class="student-name">친구</span>, 오늘 지리 공부 재미있었어?<br>너의 마음을 클릭해 봐!</p>
                 <div style="display: flex; justify-content: center; gap: 50px;">
-                    <div style="cursor: pointer; transition: 0.2s;" onclick="alert('정말 최고였군요! 기뻐요.')">
+                    <div style="cursor: pointer; transition: 0.2s;" onclick="alert('정말 최고였어! 기뻐.')">
                         <div style="font-size: 100px;">😄</div>
                         <p style="font-weight: bold;">좋았어요!</p>
                     </div>
-                    <div style="cursor: pointer; transition: 0.2s;" onclick="alert('보통이었군요! 다음에는 더 재미있게 해봐요.')">
+                    <div style="cursor: pointer; transition: 0.2s;" onclick="alert('보통이었구나! 다음에는 더 재미있게 해보자.')">
                         <div style="font-size: 100px;">😐</div>
                         <p style="font-weight: bold;">보통이에요</p>
                     </div>
-                    <div style="cursor: pointer; transition: 0.2s;" onclick="alert('조금 어려웠군요! 선생님이 다시 도와줄게요.')">
+                    <div style="cursor: pointer; transition: 0.2s;" onclick="alert('조금 어려웠구나! 선생님이 다시 도와줄게.')">
                         <div style="font-size: 100px;">🤔</div>
                         <p style="font-weight: bold;">어려웠어요</p>
                     </div>
@@ -435,8 +438,8 @@
                 <div style="margin-bottom: 30px;">
                     <img src="http://googleusercontent.com/image_collection/image_retrieval/16657958969326407320" alt="성취 트로피" style="width: 250px;">
                 </div>
-                <h2 style="font-size: 80px; color: var(--primary);"><span class="student-name">남주</span> 친구 최고!</h2>
-                <p style="font-size: 36px; margin-top: 20px;">오늘 정말 열심히 공부했어요.<br>다음 시간에 또 만나요!</p>
+                <h2 style="font-size: 80px; color: var(--primary);">참 잘했어, <span class="student-name">친구</span> 최고야!</h2>
+                <p style="font-size: 36px; margin-top: 20px;">오늘 정말 열심히 공부했어.<br>다음 시간에 또 만나자!</p>
                 <div style="margin-top: 40px;">
                     <button class="btn-action btn-primary" onclick="location.reload()">처음으로 돌아가기</button>
                 </div>
@@ -447,7 +450,7 @@
     <script>
         let currentSlide = 1;
         const totalSlides = 15;
-        let userName = "";
+        let userName = "친구";
         let isAudioOn = false;
 
         // 1. 초기 세팅: 목차 리스트 생성
@@ -468,20 +471,40 @@
             navList.appendChild(item);
         });
 
-        // 2. 이름 입력 및 시작 함수
+        // 2. 이름 입력 및 시작 모션
         function startCourse() {
             const input = document.getElementById('name-input-field');
-            userName = input.value.trim();
-            if (!userName) userName = "친구";
+            const enteredName = input.value.trim();
+            if (enteredName) {
+                userName = enteredName;
+            }
             
             // 이름 변수 모든 곳에 적용
             const nameSpans = document.querySelectorAll('.student-name');
             nameSpans.forEach(span => span.innerText = userName);
             
+            // 환영 모션 및 폭죽 터뜨리기
+            launchConfetti();
+            
+            const titleEl = document.getElementById('welcome-title');
+            const subtitleEl = document.getElementById('welcome-subtitle');
+            
+            // UI 변경 (환영 메시지)
+            titleEl.innerHTML = `환영해, ${userName}! 🎉`;
+            titleEl.classList.add('welcome-motion');
+            subtitleEl.innerHTML = "우리 함께 멋진 여행을 떠나보자!";
+            
+            document.getElementById('name-input-field').style.display = 'none';
+            document.getElementById('start-btn').style.display = 'none';
+
             // 툴바 보이기
             document.getElementById('toolbar').style.display = 'flex';
             
-            nextSlide();
+            // 2.5초 뒤에 다음 슬라이드로 자동으로 넘어감
+            setTimeout(() => {
+                titleEl.classList.remove('welcome-motion');
+                nextSlide();
+            }, 2500);
         }
 
         // 3. 내비게이션 함수
@@ -498,25 +521,19 @@
         }
 
         function jumpToSlide(n) {
-            // 현재 슬라이드 끄기
             document.getElementById('slide' + currentSlide).classList.remove('active');
             
-            // 새 슬라이드 켜기
             currentSlide = n;
             const target = document.getElementById('slide' + currentSlide);
             target.classList.add('active');
             
-            // 진행 표시 업데이트
             document.getElementById('progress-indicator').innerText = currentSlide + " / " + totalSlides;
             
-            // 목차 하이라이트 업데이트
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             document.getElementById('nav-item-' + currentSlide).classList.add('active');
             
-            // 사이드바 닫기
             closeSidebar();
 
-            // UDL 음성 지원 모드인 경우 제목 읽어주기 (시뮬레이션)
             if (isAudioOn) {
                 const titleText = target.querySelector('h2, h1').innerText;
                 speak(titleText);
@@ -539,17 +556,14 @@
         // 5. UDL 편의 기능 (줌, 오디오)
         function toggleZoom() {
             document.body.classList.toggle('zoom-mode');
-            const isZoomed = document.body.classList.contains('zoom-mode');
-            alert(isZoomed ? "큰 글씨 모드가 켜졌습니다." : "일반 글씨 모드입니다.");
         }
 
         function toggleAudio() {
             isAudioOn = !isAudioOn;
-            alert(isAudioOn ? "읽어주기 모드가 켜졌습니다. 페이지 제목을 읽어줍니다." : "읽어주기 모드가 꺼졌습니다.");
+            alert(isAudioOn ? "읽어주기 모드가 켜졌습니다." : "읽어주기 모드가 꺼졌습니다.");
         }
 
         function speak(text) {
-            // 실제 웹 브라우저 TTS 호출 (Web Speech API)
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
@@ -559,29 +573,35 @@
             }
         }
 
-        // 6. 퀴즈 정답 확인 및 축하 애니메이션
-        function checkQuiz(element, isCorrect, feedback) {
+        // 6. 퀴즈 정답 확인 및 축하 애니메이션 (이름 불러주기 반영)
+        function checkQuiz(element, isCorrect, feedbackText) {
             const slideId = element.closest('.slide-container').id;
             const fbBox = document.getElementById('feedback-' + slideId);
             fbBox.style.display = 'block';
-            fbBox.innerText = feedback;
             
             if (isCorrect) {
+                // 정답일 경우 학생 이름을 부르며 축하 메시지 생성
+                const congratsMsg = `${userName} 축하해!! ${feedbackText}`;
+                fbBox.innerText = congratsMsg;
                 fbBox.className = 'feedback-box correct';
                 launchConfetti();
-                speak("정답입니다! " + feedback);
+                speak(congratsMsg);
             } else {
+                // 오답일 경우 친절한 설명만 표시
+                const tryAgainMsg = `아쉬워, ${userName}. ${feedbackText}`;
+                fbBox.innerText = tryAgainMsg;
                 fbBox.className = 'feedback-box wrong';
-                speak("아쉬워요. " + feedback);
+                speak(tryAgainMsg);
             }
         }
 
         function launchConfetti() {
             const container = document.getElementById('confetti');
             container.style.display = 'block';
+            container.innerHTML = ''; // 기존 폭죽 초기화
             const emojis = ['🎉', '✨', '🎈', '⭐', '🎊'];
             
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < 35; i++) {
                 const emoji = document.createElement('div');
                 emoji.className = 'emoji-fall';
                 emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
