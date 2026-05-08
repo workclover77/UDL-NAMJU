@@ -15,17 +15,16 @@
             --m-gold: #c5a900;
             --bg: #ffffff;
             --base-font-size: 20px; 
-            --zoom-inc: 0px; /* JS에서 직접 0px, 3px, 6px로 제어 */
+            --zoom-inc: 0px; 
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background-color: #f0f2f5;
+            background-color: #e2e8f0;
             font-family: 'Nanum Gothic', sans-serif;
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh; overflow: hidden;
-            /* 기본 폰트 크기에 줌 증가치를 더해 반응형 구현 */
             font-size: calc(var(--base-font-size) + var(--zoom-inc));
         }
 
@@ -33,7 +32,8 @@
         #deck {
             width: 1280px; height: 720px;
             background: var(--bg); position: relative;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.2); overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15); overflow: hidden;
+            border-radius: 12px;
         }
 
         .slide {
@@ -43,7 +43,7 @@
         }
         .slide.active { display: flex; }
 
-        /* 3. 상단 툴바 (라디오 버튼 & 토글) */
+        /* 3. 상단 항상 노출 툴바 */
         #header-bar {
             position: absolute; top: 0; left: 0; width: 100%; height: 70px;
             background: white; border-bottom: 2px solid #eee;
@@ -56,7 +56,8 @@
         /* 큰 글씨 라디오 버튼 */
         .zoom-group { display: flex; gap: 5px; }
         .zoom-group label {
-            padding: 6px 14px; background: #f1f5f9; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; color: #444; border: 2px solid transparent; transition: 0.2s;
+            padding: 6px 14px; background: #f1f5f9; border-radius: 6px; cursor: pointer; 
+            font-size: 16px; font-weight: bold; color: #444; border: 2px solid transparent; transition: 0.2s;
         }
         .zoom-group input:checked + label { background: var(--m-blue); color: white; border-color: var(--m-blue); }
         .zoom-group input { display: none; }
@@ -69,23 +70,31 @@
         input:checked + .slider { background-color: var(--m-blue); }
         input:checked + .slider:before { transform: translateX(26px); }
 
-        /* 4. 사이드바 목차 */
+        /* 4. 개선된 사이드바 목차 (스크롤 & 닫기 버튼 포함) */
         #sidebar {
-            position: absolute; top: 0; left: -320px; width: 300px; height: 100%;
+            position: absolute; top: 7.5%; left: -350px; width: 320px; height: 85%;
             background: white; z-index: 2000; transition: 0.4s cubic-bezier(0.4,0,0.2,1);
-            box-shadow: 10px 0 30px rgba(0,0,0,0.1); padding: 30px; overflow-y: auto;
+            box-shadow: 10px 10px 30px rgba(0,0,0,0.15); padding: 30px; 
+            border-radius: 0 20px 20px 0;
+            overflow-y: auto; /* 숨겨진 스크롤 활성화 */
+            -ms-overflow-style: none; scrollbar-width: none;
         }
+        #sidebar::-webkit-scrollbar { display: none; }
         #sidebar.open { left: 0; }
-        .nav-link { padding: 12px; cursor: pointer; border-radius: 8px; font-weight: bold; color: #444; margin-bottom: 5px; }
+        
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .close-btn { font-size: 28px; background: none; border: none; cursor: pointer; color: #999; }
+        
+        .nav-link { padding: 12px; cursor: pointer; border-radius: 8px; font-weight: bold; color: #444; margin-bottom: 5px; font-size: 18px; }
         .nav-link:hover { background: #f0f4ff; }
         .nav-link.active { background: var(--m-blue); color: white; }
 
-        /* 5. UDL 어휘 지원 (슬라이드당 1개 지정) */
+        /* 5. UDL 어휘 지원 (파란색, 밑줄) */
         .udl-word {
             color: #0056b3; text-decoration: underline; cursor: pointer; font-weight: normal;
         }
 
-        /* 6. 학생 이름 변수 (진하게, 밑줄 없음) */
+        /* 6. 학생 이름 변수 */
         .name-var { font-weight: normal; text-decoration: none; color: inherit; }
 
         /* 7. 커스텀 인터랙션 모달 */
@@ -123,10 +132,12 @@
         .btn-prev { background: #e2e8f0; color: #475569; }
         .btn-next { background: var(--m-blue); color: white; }
 
-        /* 10. 슬라이드 레이아웃 */
+        /* 10. 슬라이드 레이아웃 템플릿 */
         .title-txt { font-size: 50px; color: var(--m-blue); margin-bottom: 30px; border-bottom: 3px solid var(--m-gold); display: inline-block; }
         .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
-        .css-map-mock { width: 100%; height: 350px; background: #ddeeff; border: 4px solid #ccddee; border-radius: 20px; display: flex; align-items: center; justify-content: center; position: relative; }
+        .image-placeholder { width: 100%; height: 350px; background: #e2e8f0; border-radius: 20px; display: flex; justify-content: center; align-items: center; border: 4px dashed #cbd5e1; color: #94a3b8; font-weight: bold; font-size: 24px; text-align: center; }
+        .tiled-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .tile-box { background: white; padding: 40px 20px; border-radius: 20px; text-align: center; border: 2px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .quiz-opt { padding: 25px; border: 3px solid #eee; border-radius: 15px; margin-bottom: 15px; cursor: pointer; font-weight: bold; background: white; font-size: 1.2em; }
         .quiz-opt:hover { border-color: var(--m-blue); background: #f8faff; }
     </style>
@@ -134,8 +145,8 @@
 <body>
 
     <div id="deck">
-        <header id="header-bar" style="display: none;">
-            <button class="btn-move" style="padding: 10px 20px; font-size: 18px; border-radius: 8px;" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i> 목차</button>
+        <header id="header-bar">
+            <button class="btn-move" style="padding: 10px 20px; font-size: 18px; border-radius: 8px;" onclick="openSidebar()"><i class="fa-solid fa-bars"></i> 목차 열기</button>
             
             <div class="toolbar-section" style="margin-left: 40px;">
                 <span class="toolbar-label">글씨 크기:</span>
@@ -157,7 +168,10 @@
         </header>
 
         <nav id="sidebar">
-            <h3 style="margin-bottom: 20px; color: var(--m-blue); font-size: 24px;">학습 목차</h3>
+            <div class="sidebar-header">
+                <h3 style="color: var(--m-blue); font-size: 24px;">학습 목차</h3>
+                <button class="close-btn" onclick="closeSidebar()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
             <div id="sidebar-list"></div>
         </nav>
 
@@ -177,7 +191,7 @@
         <div id="confetti-container"></div>
 
         <div class="slide active" id="slide1">
-            <div style="text-align: center; margin-top: 100px;">
+            <div style="text-align: center; margin-top: 80px;">
                 <h1 style="font-size: 80px; color: var(--m-blue); margin-bottom: 30px;">🗺️ 우리 고장 여행</h1>
                 <p style="margin-bottom: 50px; font-size: 1.5em;">안녕! 즐거운 <span class="udl-word" data-tip="집을 떠나 다른 곳을 구경함">여행</span>을 시작할까? 이름을 알려줘!</p>
                 <input type="text" id="name-in" style="padding: 20px; font-size: 30px; width: 400px; border: 4px solid #cbd5e1; border-radius: 15px; text-align: center;" placeholder="이름 입력">
@@ -209,10 +223,102 @@
                     <p style="font-size: 1.4em; line-height: 1.6;">여러 사람들이 함께 <span class="udl-word" data-tip="한곳에 무리지어 삼">모여 사는</span> 곳을 말해요.</p>
                     <p style="font-size: 1.4em; line-height: 1.6; margin-top: 30px;"><span class="name-var">학생</span>가 매일 다니는 학교 앞과 동네 골목이 바로 '고장'이야!</p>
                 </div>
-                <div class="css-map-mock">
-                    <div style="width: 80%; height: 80%; background: white; border-radius: 10px; border: 2px solid #eee;"></div>
-                    <i class="fa-solid fa-house map-pin"></i>
+                <div class="image-placeholder">
+                    <i class="fa-solid fa-house-chimney" style="font-size: 60px; display: block; margin-bottom: 10px;"></i>
+                    [ 마을 사진이 들어갈 자리 ]
                 </div>
+            </div>
+            <div class="footer-bar">
+                <button class="btn-prev btn-move" onclick="changeSlide(-1)">이전</button>
+                <button class="btn-next btn-move" onclick="changeSlide(1)">다음</button>
+            </div>
+        </div>
+
+        <div class="slide" id="slide4">
+            <h2 class="title-txt">어떤 곳이 있을까요?</h2>
+            <div class="two-col">
+                <div>
+                    <p style="font-size: 1.4em; line-height: 1.6;">우리가 매일 가는 곳들을 떠올려 보세요.</p>
+                    <ul style="font-size: 1.4em; margin-top: 20px; line-height: 2;">
+                        <li>공부하는 학교</li>
+                        <li>물건을 사는 시장</li>
+                        <li>편안히 쉬는 공원</li>
+                    </ul>
+                    <p style="font-size: 1.4em; margin-top: 20px;">학교 가는 <span class="udl-word" data-tip="집들이 모여 있는 좁은 길">골목</span>도 고장의 모습이에요.</p>
+                </div>
+                <div class="image-placeholder" style="background: #fef08a; border-color: #fde047;">
+                    <i class="fa-solid fa-tree" style="font-size: 60px; display: block; margin-bottom: 10px;"></i>
+                    [ 공원 사진이 들어갈 자리 ]
+                </div>
+            </div>
+            <div class="footer-bar">
+                <button class="btn-prev btn-move" onclick="changeSlide(-1)">이전</button>
+                <button class="btn-next btn-move" onclick="changeSlide(1)">다음</button>
+            </div>
+        </div>
+
+        <div class="slide" id="slide5">
+            <h2 class="title-txt">북적북적 전통 시장</h2>
+            <div class="two-col">
+                <div class="image-placeholder" style="background: #fed7aa; border-color: #facc15; border-radius: 50%; width: 350px; height: 350px; margin: 0 auto;">
+                    <i class="fa-solid fa-basket-shopping" style="font-size: 60px; display: block; margin-bottom: 10px;"></i><br>
+                    [ 시장 사진 자리 ]
+                </div>
+                <div>
+                    <p style="font-size: 1.4em; line-height: 1.6;">시장은 맛있는 음식과 필요한 물건을 사고파는 활기찬 <span class="udl-word" data-tip="물건을 사고파는 곳">시장</span>이에요.</p>
+                    <p style="font-size: 1.4em; line-height: 1.6; margin-top: 30px;"><span class="name-var">학생</span>는 시장에서 무엇을 구경하고 싶나요?</p>
+                </div>
+            </div>
+            <div class="footer-bar">
+                <button class="btn-prev btn-move" onclick="changeSlide(-1)">이전</button>
+                <button class="btn-next btn-move" onclick="changeSlide(1)">다음</button>
+            </div>
+        </div>
+
+        <div class="slide" id="slide6">
+            <h2 class="title-txt">영상을 보며 확인해요</h2>
+            <div style="text-align: center;">
+                <p style="font-size: 1.4em; margin-bottom: 20px;">선생님이 준비한 <span class="udl-word" data-tip="컴퓨터나 TV로 보는 움직이는 그림">영상</span>을 함께 감상해 볼까요?</p>
+                <div style="width: 80%; height: 350px; background: #111; margin: 0 auto; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white;">
+                    <i class="fa-brands fa-youtube" style="font-size: 80px; color: red;"></i>
+                    <p style="margin-left: 20px; font-size: 24px;">[ 유튜브 영상 퍼가기 코드를 여기에 삽입 ]</p>
+                </div>
+            </div>
+            <div class="footer-bar">
+                <button class="btn-prev btn-move" onclick="changeSlide(-1)">이전</button>
+                <button class="btn-next btn-move" onclick="changeSlide(1)">다음</button>
+            </div>
+        </div>
+
+        <div class="slide" id="slide7">
+            <h2 class="title-txt">친구들이 좋아하는 곳</h2>
+            <div>
+                <p style="font-size: 1.4em; margin-bottom: 30px;">우리 반 친구들은 어디를 가장 좋아할까요?</p>
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div style="display: flex; align-items: center;">
+                        <span style="width: 100px; font-weight: bold; font-size: 1.2em;"><span class="udl-word" data-tip="나무와 풀이 많은 쉼터">공원</span></span>
+                        <div style="height: 40px; background: var(--m-blue); width: 85%; border-radius: 10px; color: white; padding-left: 20px; line-height: 40px; font-weight: bold;">85%</div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <span style="width: 100px; font-weight: bold; font-size: 1.2em;">학교</span>
+                        <div style="height: 40px; background: #3b82f6; width: 60%; border-radius: 10px; color: white; padding-left: 20px; line-height: 40px; font-weight: bold;">60%</div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <span style="width: 100px; font-weight: bold; font-size: 1.2em;">시장</span>
+                        <div style="height: 40px; background: #fbbf24; width: 40%; border-radius: 10px; color: white; padding-left: 20px; line-height: 40px; font-weight: bold;">40%</div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bar">
+                <button class="btn-prev btn-move" onclick="changeSlide(-1)">이전</button>
+                <button class="btn-next btn-move" onclick="changeSlide(1)">다음</button>
+            </div>
+        </div>
+
+        <div class="slide" id="slide8">
+            <div style="text-align: center; margin-top: 100px;">
+                <h1 style="font-size: 80px; color: var(--m-gold); margin-bottom: 40px;">하늘에서 고장을 봐요! 🛰️</h1>
+                <p style="font-size: 1.6em;"><span class="name-var">학생</span>, <span class="udl-word" data-tip="우리 머리 위에 있는 높고 넓은 곳">하늘</span> 위에서 우리 동네를 내려다볼 준비가 되었나요?</p>
             </div>
             <div class="footer-bar">
                 <button class="btn-prev btn-move" onclick="changeSlide(-1)">이전</button>
@@ -224,13 +330,80 @@
             <h2 class="title-txt">디지털 지도란?</h2>
             <div class="two-col">
                 <div>
-                    <p style="font-size: 1.4em; line-height: 1.6;">하늘 높이 떠 있는 인공위성에서 내려다본 우리 고장의 진짜 모습이야.</p>
-                    <p style="font-size: 1.4em; line-height: 1.6; margin-top: 30px;">컴퓨터로 만든 <span class="udl-word" data-tip="컴퓨터 화면으로 보는 그림">영상</span> 지도를 활용하면 길을 아주 쉽게 찾을 수 있어요.</p>
+                    <p style="font-size: 1.4em; line-height: 1.6;">하늘 높이 떠 있는 <span class="udl-word" data-tip="우주에서 지구를 찍는 기계">인공위성</span>에서 내려다본 우리 고장의 진짜 모습이야.</p>
+                    <p style="font-size: 1.4em; line-height: 1.6; margin-top: 30px;">컴퓨터로 만든 영상 지도를 활용하면 길을 아주 쉽게 찾을 수 있어요.</p>
                 </div>
-                <div class="css-map-mock" style="background: #eef9ee; border-color: #cceecc;">
-                    <div style="position: absolute; width: 100%; height: 100%; border: 1px solid #ccc; background-image: radial-gradient(#aaa 1px, transparent 1px); background-size: 30px 30px;"></div>
-                    <i class="fa-solid fa-satellite" style="font-size: 80px; color: #555; z-index: 10;"></i>
-                    <p style="z-index: 10; font-weight: bold; color: #333; margin-top: 120px; font-size: 1.2em; background: white; padding: 10px; border-radius: 10px;">위성 지도 체험 화면</p>
+                <div class="image-placeholder" style="background: #eef9ee; border-color: #cceecc; flex-direction: column;">
+                    <i class="fa-solid fa-satellite" style="font-size: 60px; color: #555; margin-bottom: 20px;"></i>
+                    [ 디지털 위성 지도 사진 자리 ]
+                </div>
+            </div>
+            <div class="footer-bar">
+                <button class="btn-prev btn-move" onclick="changeSlide(-1)">이전</button>
+                <button class="btn-next btn-move" onclick="changeSlide(1)">다음</button>
+            </div>
+        </div>
+
+        <div class="slide" id="slide10">
+            <h2 class="title-txt">영상 지도의 장점</h2>
+            <div class="tiled-grid">
+                <div class="tile-box">
+                    <i class="fa-solid fa-magnifying-glass-plus" style="font-size: 50px; color: var(--m-blue); margin-bottom: 20px;"></i>
+                    <h3>확대와 축소</h3>
+                    <p style="margin-top: 15px;">손가락으로 밀면 아주 자세히 보여요.</p>
+                </div>
+                <div class="tile-box">
+                    <i class="fa-solid fa-camera" style="font-size: 50px; color: #10b981; margin-bottom: 20px;"></i>
+                    <h3>진짜 모습</h3>
+                    <p style="margin-top: 15px;">실제 사진이라 실제와 똑같아요.</p>
+                </div>
+                <div class="tile-box">
+                    <i class="fa-solid fa-location-dot" style="font-size: 50px; color: #ef4444; margin-bottom: 20px;"></i>
+                    <h3>길 찾기</h3>
+                    <p style="margin-top: 15px;"><span class="udl-word" data-tip="글자를 써서 찾는 일">검색</span>만 하면 바로 알려줘요.</p>
+                </div>
+            </div>
+            <div class="footer-bar">
+                <button class="btn-prev btn-move" onclick="changeSlide(-1)">이전</button>
+                <button class="btn-next btn-move" onclick="changeSlide(1)">다음</button>
+            </div>
+        </div>
+
+        <div class="slide" id="slide11">
+            <h2 class="title-txt">지도 비교하기</h2>
+            <div class="two-col">
+                <div class="tile-box">
+                    <i class="fa-solid fa-pencil" style="font-size: 50px; color: #94a3b8; margin-bottom: 20px;"></i>
+                    <h3>그림 지도</h3>
+                    <p style="margin-top: 15px;">우리의 <span class="udl-word" data-tip="머릿속에 떠오르는 느낌">생각</span>과 느낌을 담아 종이에 직접 그려요.</p>
+                </div>
+                <div class="tile-box">
+                    <i class="fa-solid fa-satellite" style="font-size: 50px; color: var(--m-blue); margin-bottom: 20px;"></i>
+                    <h3>디지털 영상 지도</h3>
+                    <p style="margin-top: 15px;">컴퓨터를 이용해 실제 모습 그대로를 아주 자세하게 볼 수 있어요.</p>
+                </div>
+            </div>
+            <div class="footer-bar">
+                <button class="btn-prev btn-move" onclick="changeSlide(-1)">이전</button>
+                <button class="btn-next btn-move" onclick="changeSlide(1)">다음</button>
+            </div>
+        </div>
+
+        <div class="slide" id="slide12">
+            <h2 class="title-txt">우리를 도와주는 공공기관</h2>
+            <p style="font-size: 1.4em; margin-bottom: 30px;">우리 동네에는 우리를 도와주는 <span class="udl-word" data-tip="나라에서 세운 도움 기관">공공기관</span>이 아주 많아요.</p>
+            <div class="tiled-grid">
+                <div class="tile-box" style="padding: 20px;">
+                    <div class="image-placeholder" style="height: 150px; margin-bottom: 15px; font-size: 18px;">[ 학교 사진 ]</div>
+                    <h3>학교</h3>
+                </div>
+                <div class="tile-box" style="padding: 20px;">
+                    <div class="image-placeholder" style="height: 150px; margin-bottom: 15px; font-size: 18px;">[ 소방서 사진 ]</div>
+                    <h3>소방서</h3>
+                </div>
+                <div class="tile-box" style="padding: 20px;">
+                    <div class="image-placeholder" style="height: 150px; margin-bottom: 15px; font-size: 18px;">[ 경찰서 사진 ]</div>
+                    <h3>경찰서</h3>
                 </div>
             </div>
             <div class="footer-bar">
@@ -242,7 +415,7 @@
         <div class="slide" id="slide13">
             <h2 class="title-txt">도와주는 곳 찾기 퀴즈</h2>
             <div>
-                <p style="font-size: 1.5em; margin-bottom: 40px; font-weight: bold;">Q. 불이 났을 때 우리를 도와주는 <span class="udl-word" data-tip="나라에서 세운 도움 기관">공공기관</span>은 어디일까?</p>
+                <p style="font-size: 1.5em; margin-bottom: 40px; font-weight: bold;">Q. 불이 났을 때 우리를 도와주는 <span class="udl-word" data-tip="불을 끄고 사람을 구하는 곳">소방서</span>는 몇 번일까?</p>
                 <div class="quiz-opt" onclick="checkQuiz(false, '마트는 맛있는 음식과 물건을 사는 곳이에요.')">1. 대형 마트</div>
                 <div class="quiz-opt" onclick="checkQuiz(true, '정답! 소방서에서 용감한 소방관님이 불을 꺼주셔요!')">2. 119 소방서</div>
             </div>
@@ -302,7 +475,7 @@
             div.onclick = () => jumpToSlide(i+1);
             sidebarList.appendChild(div);
         });
-        document.getElementById('nav-1').classList.add('active'); // 초기 활성화
+        document.getElementById('nav-1').classList.add('active'); 
 
         // 2. 시작 및 이름/조사 처리 로직
         function doStart() {
@@ -329,7 +502,6 @@
             // 2.5초 후 2번 슬라이드로 자동 이동
             setTimeout(() => {
                 overlay.style.display = 'none';
-                document.getElementById('header-bar').style.display = 'flex';
                 jumpToSlide(2);
             }, 2500);
         }
@@ -342,27 +514,15 @@
         }
 
         function jumpToSlide(n) {
-            // 모든 슬라이드 숨기고 목표 슬라이드만 활성화
-            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
-            
-            // HTML상에 구현되지 않은 빈 번호는 에러 방지를 위해 존재하는 가장 가까운 슬라이드로 처리하거나 임시 생성
-            let target = document.getElementById('slide' + n);
-            if(!target) {
-                // 데모 목적으로 비어있는 슬라이드 접근 시 안내 문구를 동적으로 렌더링
-                target = document.createElement('div');
-                target.className = 'slide active';
-                target.id = 'slide' + n;
-                target.innerHTML = `<h2 class="title-txt">준비 중인 화면입니다 (${n}/15)</h2>
-                                    <div class="content-area"><p style="font-size: 1.5em; text-align: center; margin-top: 50px;">나머지 교육 자료를 여기에 채워 넣어주세요.</p></div>
-                                    <div class="footer-bar">
-                                        <button class="btn-prev btn-move" onclick="changeSlide(-1)">이전</button>
-                                        <button class="btn-next btn-move" onclick="changeSlide(1)">다음</button>
-                                    </div>`;
-                document.getElementById('deck').appendChild(target);
-            } else {
-                target.classList.add('active');
+            // "1. 여행 시작" 목차를 누르면 무조건 이름 입력 화면으로 초기화
+            if(n === 1) {
+                document.getElementById('name-in').value = '';
+                studentName = "";
             }
 
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.getElementById('slide' + n).classList.add('active');
+            
             currentSlide = n;
 
             // 목차 하이라이트 동기화
@@ -372,7 +532,7 @@
 
             // 소리모드 동작 및 목차 닫기
             if(isAudioOn) speakActiveSlide();
-            document.getElementById('sidebar').classList.remove('open');
+            closeSidebar();
             
             // 15번 슬라이드 진입 시 폭죽 터뜨리기
             if(n === 15) fireConfetti();
@@ -412,7 +572,7 @@
             window.speechSynthesis.speak(msg);
         }
 
-        // 6. 커스텀 모달 (Alert 대체) 및 단어 말풍선
+        // 6. 커스텀 모달 및 단어 말풍선
         function popUI(msg) {
             document.getElementById('modal-msg').innerText = msg;
             document.getElementById('ui-modal-overlay').style.display = 'flex';
@@ -437,7 +597,9 @@
             }
         }
 
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+        // 사이드바 제어 함수
+        function openSidebar() { document.getElementById('sidebar').classList.add('open'); }
+        function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
 
         // 7. 캔버스 기반 화면 꽉차는 폭죽 애니메이션
         function fireConfetti() {
