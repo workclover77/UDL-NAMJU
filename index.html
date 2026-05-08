@@ -3,92 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3학년 사회 - 우리 고장의 모습</title>
+    <title>3학년 사회 - 우리 고장의 모습 (UDL 모드)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* 고해상도 태블릿을 위한 기본 설정 */
         :root {
-            --primary-color: #4A90E2;
-            --bg-color: #f0f4f8;
-            --font-size-base: 24px; /* 태블릿 가독성을 위해 기본 폰트를 크게 설정 */
+            --primary: #4A90E2;
+            --bg: #f8f9fa;
+            --text-size: 24px; /* 기본 글자 크기 */
         }
+
+        /* [핵심 기능] 글자 확대 클래스 - 전체 요소에 적용됨 */
+        body.zoom-in { --text-size: 36px; }
+        body.zoom-in h1 { font-size: 4rem; }
+        body.zoom-in .word-link { border-bottom: 4px solid orange; }
 
         body {
-            font-family: 'Malgun Gothic', sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            background-color: var(--bg);
+            font-size: var(--text-size);
+            margin: 0; transition: all 0.3s ease;
         }
 
-        .container {
-            width: 90%;
-            max-width: 2000px; /* 너무 퍼지지 않게 제한 */
-            background: white;
-            margin: 40px 0;
-            padding: 50px;
-            border-radius: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        /* 고정 메뉴 바 (확대 버튼 등) */
+        .top-toolbar {
+            position: fixed; top: 0; width: 100%; background: white;
+            padding: 15px 30px; display: flex; gap: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1000;
         }
 
-        h1 { font-size: 3rem; color: #333; text-align: center; }
-        p { font-size: 1.8rem; line-height: 1.6; color: #555; }
+        .tool-btn {
+            padding: 10px 20px; font-size: 18px; border-radius: 10px;
+            border: 2px solid var(--primary); background: white; cursor: pointer;
+        }
+        .tool-btn.active { background: var(--primary); color: white; }
 
-        /* 미디어 박스 (영상, 사진 등이 들어갈 곳) */
-        .media-box {
-            width: 100%;
-            aspect-ratio: 16 / 9; /* 2560*1600 비율과 유사하게 유지 */
-            background: #eee;
-            border-radius: 20px;
-            margin: 40px 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
+        /* 페이지 컨테이너 */
+        .slide {
+            display: none; padding: 120px 60px 100px;
+            max-width: 1200px; margin: 0 auto; min-height: 100vh;
+        }
+        .slide.active { display: block; animation: fadeIn 0.5s; }
+
+        /* 말풍선 기능 (Tooltip) */
+        .word-link {
+            color: var(--primary); font-weight: bold; cursor: help;
+            border-bottom: 2px dashed var(--primary); position: relative;
+        }
+        
+        .word-link::after {
+            content: attr(data-tip); /* 설명 문구 */
+            position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%);
+            background: #333; color: white; padding: 10px 20px;
+            border-radius: 10px; font-size: 0.8em; white-space: nowrap;
+            visibility: hidden; opacity: 0; transition: 0.2s; z-index: 100;
+        }
+        .word-link:hover::after { visibility: visible; opacity: 1; }
+
+        /* 미디어 박스 (영상/그림 교체 용이하게) */
+        .media-placeholder {
+            width: 100%; aspect-ratio: 16/9; background: #ddd;
+            border-radius: 20px; display: flex; align-items: center; justify-content: center;
+            margin: 30px 0; border: 4px dashed #999;
         }
 
-        /* 큰 버튼 스타일 (특수 학생의 조작 편의성) */
-        .nav-footer {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            margin-top: 50px;
-        }
+        .nav-footer { position: fixed; bottom: 30px; right: 50px; display: flex; gap: 20px; }
+        .btn-move { padding: 20px 40px; font-size: 1.5rem; border-radius: 50px; border: none; background: #333; color: white; cursor: pointer; }
 
-        .btn {
-            padding: 25px 60px;
-            font-size: 2rem;
-            font-weight: bold;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .btn-next { background-color: var(--primary-color); color: white; }
-        .btn-prev { background-color: #ccc; color: #333; }
-        .btn:active { transform: scale(0.95); }
-
+        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>📍 우리 고장의 모습 알아보기</h1>
-        <p>아래 영상을 보고 우리 동네의 소중한 장소들을 찾아보세요.</p>
+    <div class="top-toolbar">
+        <button class="tool-btn" onclick="toggleZoom(this)"><i class="fa-solid fa-magnifying-glass-plus"></i> 큰 글씨 모드</button>
+        <button class="tool-btn" onclick="toggleAudio(this)"><i class="fa-solid fa-volume-high"></i> 읽어주기 모드</button>
+        <div style="margin-left: auto; color: #666;">3학년 사회 | 우리 고장</div>
+    </div>
 
-        <!-- 미디어 영역: 여기에 유튜브 iframe이나 이미지를 넣습니다 -->
-        <div class="media-box">
-            <!-- 임시 이미지 (나중에 영상 코드로 교체) -->
-            <p style="font-size: 1.5rem;">[여기에 학습 영상이나 지도가 들어갑니다]</p>
-        </div>
-
-        <div class="nav-footer">
-            <button class="btn btn-prev">이전으로</button>
-            <button class="btn btn-next" onclick="alert('다음 페이지를 연결해 주세요!')">다음으로</button>
+    <div class="slide active" id="p1">
+        <h1>👋 안녕! 우리 고장 여행을 시작할까?</h1>
+        <p>오늘은 우리가 살고 있는 <span class="word-link" data-tip="사람들이 모여 사는 마을이나 동네" onclick="speak('고장')">고장</span>의 모습을 살펴볼 거야.</p>
+        <div class="media-placeholder">
+            <p>[이곳에 도입 애니메이션이나 사진을 넣어주세요]</p>
         </div>
     </div>
 
+    <div class="slide" id="p2">
+        <h2>📺 영상으로 보는 우리 고장</h2>
+        <p>비행기를 타고 하늘에서 본 우리 동네는 어떤 모습일까요?</p>
+        <div class="media-placeholder" style="background: #000; border: none;">
+            <p style="color: white;">[유튜브 영상 1-3분 분량 들어갈 자리]</p>
+        </div>
+        <p class="desc">팁: 영상을 보고 가장 기억에 남는 장소를 생각해보세요.</p>
+    </div>
+
+    <div class="slide" id="p3">
+        <h2>📍 고장의 중요한 곳들</h2>
+        <p>우리 고장에는 여러 사람이 함께 이용하는 <span class="word-link" data-tip="국가나 단체가 세운 도움을 주는 기관" onclick="speak('공공기관')">공공기관</span>이 있어요.</p>
+        <ul>
+            <li>학교: 우리가 공부하는 곳</li>
+            <li>우체국: 편지를 전해주는 곳</li>
+        </ul>
+        <div class="media-placeholder">
+            <p>[장소 사진 슬라이드 쇼 자리]</p>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <button class="btn-move" onclick="moveSlide(-1)">이전</button>
+        <button class="btn-move" onclick="moveSlide(1)" style="background: var(--primary);">다음</button>
+    </div>
+
+    <script>
+        let currentIdx = 1;
+        const totalSlides = 3; // 검토용으로 일단 3개만 배치
+
+        // [기능 1] 글자 확대 토글 (상태 유지)
+        function toggleZoom(btn) {
+            document.body.classList.toggle('zoom-in');
+            btn.classList.toggle('active');
+        }
+
+        // [기능 2] 슬라이드 이동
+        function moveSlide(step) {
+            const next = currentIdx + step;
+            if(next < 1 || next > totalSlides) return;
+            
+            document.getElementById('p' + currentIdx).classList.remove('active');
+            document.getElementById('p' + next).classList.add('active');
+            currentIdx = next;
+        }
+
+        // [기능 3] 음성 지원 (브라우저 기본 TTS 활용)
+        let isAudioOn = false;
+        function toggleAudio(btn) {
+            isAudioOn = !isAudioOn;
+            btn.classList.toggle('active');
+            if(isAudioOn) speak("읽어주기 모드가 켜졌습니다.");
+        }
+
+        function speak(text) {
+            if(!isAudioOn) return;
+            window.speechSynthesis.cancel(); // 읽고 있던 것 중지
+            const msg = new SpeechSynthesisUtterance(text);
+            msg.lang = 'ko-KR';
+            msg.rate = 0.9; // 조금 천천히
+            window.speechSynthesis.speak(msg);
+        }
+    </script>
 </body>
 </html>
