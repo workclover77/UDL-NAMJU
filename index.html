@@ -3,411 +3,595 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3학년 사회 - 우리 고장의 모습 (앵커바 포함)</title>
+    <title>3학년 사회 - 우리 고장의 모습 여행</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* 1. 핵심 디자인 시스템 */
         :root {
-            --primary: #FF823A;
-            --secondary: #4A90E2;
-            --bg: #F8FAFC;
-            --text-size: 24px;
+            --primary: #4f46e5;      /* 신뢰감 있는 블루 */
+            --secondary: #fbbf24;    /* 친근한 옐로우 */
+            --accent: #10b981;       /* 안정적인 그린 */
+            --bg-base: #f8fafc;      /* 깨끗한 배경 */
+            --text-main: #1e293b;    /* 명확한 텍스트 */
+            --slide-width: 1280px;
+            --slide-height: 720px;
+            --zoom-factor: 1;        /* 기본 줌 */
         }
 
-        body.zoom-in { --text-size: 36px; }
-        body.zoom-in h1 { font-size: 4.5rem; }
-        body.zoom-in h2 { font-size: 3.5rem; }
-        
+        * { box-sizing: border-box; }
+
+        /* 2. 레이아웃 및 해상도 최적화 (2560x1600 태블릿 대응) */
         body {
-            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-            background-color: var(--bg); font-size: var(--text-size);
-            margin: 0; color: #333; transition: all 0.3s ease; overflow-x: hidden;
+            margin: 0; padding: 0;
+            background-color: #334155; /* 슬라이드 밖 배경색 */
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; font-family: 'Nanum Gothic', sans-serif;
+            overflow: hidden;
+            transition: font-size 0.3s ease;
         }
 
-        /* ---------------------------------
-           상단 툴바
-        --------------------------------- */
-        .top-toolbar {
-            position: fixed; top: 0; width: 100%; background: white;
-            padding: 15px 40px; display: flex; gap: 20px; align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); z-index: 1000; box-sizing: border-box;
+        /* 큰 글씨 모드 적용 시 */
+        body.zoom-mode {
+            --text-size-p: 32px;
+            --text-size-h2: 56px;
         }
 
-        .tool-btn {
-            padding: 12px 25px; font-size: 1.2rem; border-radius: 12px; font-weight: bold;
-            border: 2px solid var(--secondary); background: white; color: var(--secondary); cursor: pointer;
+        /* 고정된 슬라이드 프레임 */
+        #slide-master {
+            width: var(--slide-width);
+            height: var(--slide-height);
+            background-color: var(--bg-base);
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column;
         }
-        .tool-btn.active { background: var(--secondary); color: white; }
-        .progress-text { margin-left: auto; font-weight: bold; color: #64748B; font-size: 1.2rem; }
 
-        /* ---------------------------------
-           왼쪽 슬라이딩 앵커 바 (목차)
-        --------------------------------- */
-        .sidebar-overlay { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.4); z-index: 1500; opacity: 0; transition: opacity 0.3s;
+        .slide-container {
+            width: 100%; height: 100%;
+            padding: 60px 80px;
+            display: none;
+            flex-direction: column;
+            background: radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.05) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 80%, rgba(251, 191, 36, 0.05) 0%, transparent 40%);
         }
-        .sidebar-overlay.show { display: block; opacity: 1; }
-        
-        .sidebar { 
-            position: fixed; top: 0; left: -450px; width: 400px; height: 100vh; 
-            background: white; z-index: 2000; box-shadow: 5px 0 20px rgba(0,0,0,0.15); 
-            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            padding: 30px; overflow-y: auto; box-sizing: border-box;
+
+        .slide-container.active { display: flex; animation: slideIn 0.5s ease-out; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* 3. 상단 툴바 및 앵커 바 (사이드바) */
+        #toolbar {
+            position: absolute; top: 0; left: 0; width: 100%; height: 70px;
+            background: white; border-bottom: 1px solid #e2e8f0;
+            display: flex; align-items: center; padding: 0 30px; z-index: 1000;
+        }
+
+        .sidebar {
+            position: absolute; top: 0; left: -320px; width: 320px; height: 100%;
+            background: white; z-index: 2000; box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 30px 20px; overflow-y: auto;
         }
         .sidebar.open { left: 0; }
+
+        .sidebar-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3); z-index: 1500; display: none;
+        }
+        .sidebar-overlay.active { display: block; }
+
+        .nav-item {
+            padding: 15px 20px; margin-bottom: 8px; border-radius: 8px;
+            cursor: pointer; font-weight: bold; color: #475569; font-size: 1.2rem;
+            transition: 0.2s; border-left: 5px solid transparent;
+        }
+        .nav-item:hover { background: #f1f5f9; }
+        .nav-item.active { background: #eef2ff; color: var(--primary); border-left-color: var(--primary); }
+
+        /* 4. 타이포그래피 (UDL 맞춤형) */
+        h1, h2, h3 { font-family: 'Gaegu', cursive; margin: 0; color: var(--text-main); }
+        .slide-title { font-size: 52px; margin-bottom: 40px; color: var(--primary); border-bottom: 4px solid var(--secondary); display: inline-block; }
+        p, li { font-size: 28px; line-height: 1.6; color: #334155; word-break: keep-all; margin: 0 0 15px 0; }
+        .student-name { color: var(--primary); font-weight: bold; border-bottom: 2px solid var(--primary); }
+
+        /* 5. 인터랙티브 컴포넌트 */
+        .btn-action {
+            padding: 20px 45px; font-size: 28px; font-weight: bold; border-radius: 50px;
+            border: none; cursor: pointer; transition: 0.3s;
+        }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3); }
+        .btn-nav { font-size: 24px; padding: 12px 30px; border-radius: 12px; background: #e2e8f0; color: #475569; border: none; cursor: pointer; }
+        .btn-nav:hover { background: #cbd5e1; }
+        .btn-nav.next { background: var(--primary); color: white; }
+
+        .name-input {
+            padding: 20px; font-size: 32px; border-radius: 15px; border: 4px solid #cbd5e1;
+            width: 400px; text-align: center; margin-bottom: 40px; outline: none;
+        }
+        .name-input:focus { border-color: var(--primary); }
+
+        .quiz-option {
+            background: white; border: 3px solid #e2e8f0; padding: 25px; border-radius: 20px;
+            margin-bottom: 15px; cursor: pointer; font-size: 28px; font-weight: bold;
+            display: flex; align-items: center; gap: 20px; transition: 0.2s;
+        }
+        .quiz-option:hover { border-color: var(--primary); transform: translateX(10px); }
         
-        .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 3px solid #E2E8F0; padding-bottom: 15px; }
-        .sidebar-header h3 { margin: 0; font-size: 1.8rem; color: var(--primary); }
-        .btn-close-sidebar { background: none; border: none; font-size: 2rem; color: #94A3B8; cursor: pointer; }
-
-        .menu-group { font-size: 1.2rem; color: #94A3B8; margin: 25px 0 10px 5px; font-weight: bold; }
-        .menu-list { list-style: none; padding: 0; margin: 0; }
-        .menu-item { 
-            padding: 18px 20px; margin-bottom: 10px; border-radius: 12px; cursor: pointer; 
-            font-size: 1.3rem; font-weight: bold; color: #475569; transition: 0.2s; 
-            border-left: 6px solid transparent; background: #F8FAFC;
+        .feedback-box {
+            display: none; padding: 25px; border-radius: 20px; font-size: 26px; font-weight: bold; margin-top: 20px;
         }
-        .menu-item:hover { background: #E2E8F0; transform: translateX(5px); }
-        .menu-item.active { background: #FFF7ED; color: var(--primary); border-left-color: var(--primary); }
+        .feedback-box.correct { background: #dcfce7; color: #166534; border: 2px solid #22c55e; }
+        .feedback-box.wrong { background: #fee2e2; color: #991b1b; border: 2px solid #ef4444; }
 
-        /* ---------------------------------
-           슬라이드 본문 영역
-        --------------------------------- */
-        .slide {
-            display: none; padding: 150px 60px 120px;
-            max-width: 1400px; margin: 0 auto; min-height: 100vh; box-sizing: border-box;
+        /* 단어 도움말 (Tooltip) */
+        .word-help {
+            color: var(--primary); font-weight: bold; cursor: help; border-bottom: 3px dashed var(--primary);
+            position: relative; display: inline-block;
         }
-        .slide.active { display: block; animation: fadeIn 0.4s ease-out; }
-
-        h1 { font-size: 3.5rem; color: var(--primary); margin-bottom: 20px; }
-        h2 { font-size: 2.8rem; color: var(--secondary); border-bottom: 4px solid #E2E8F0; padding-bottom: 15px; margin-bottom: 30px; }
-        p { line-height: 1.6; }
-
-        .word-link {
-            color: var(--secondary); font-weight: bold; cursor: pointer;
-            border-bottom: 3px dashed var(--secondary); position: relative; display: inline-block;
+        .word-help::after {
+            content: attr(data-tip); position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%);
+            background: #1e293b; color: white; padding: 15px 25px; border-radius: 12px; font-size: 20px;
+            white-space: nowrap; visibility: hidden; opacity: 0; transition: 0.2s; z-index: 100; font-weight: normal;
         }
-        .word-link::after {
-            content: attr(data-tip); position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%);
-            background: #1E293B; color: white; padding: 15px 25px;
-            border-radius: 12px; font-size: 1.2rem; white-space: nowrap;
-            visibility: hidden; opacity: 0; transition: 0.2s; z-index: 100; font-weight: normal;
-        }
-        .word-link:hover::after { visibility: visible; opacity: 1; }
+        .word-help:hover::after { visibility: visible; opacity: 1; }
 
-        .media-placeholder {
-            width: 100%; aspect-ratio: 21/9; background: #E2E8F0; border-radius: 20px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            margin: 40px 0; border: 4px dashed #CBD5E1; color: #64748B; font-size: 1.5rem;
-        }
-        .media-placeholder.video { background: #1E293B; color: white; border: none; aspect-ratio: 16/9; }
+        /* 축하 애니메이션 */
+        #confetti { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2000; display: none; }
+        .emoji-fall { position: absolute; font-size: 40px; animation: emojiFall 2s linear forwards; }
+        @keyframes emojiFall { 0% { top: -50px; opacity: 1; } 100% { top: 100%; opacity: 0; } }
 
-        .nav-footer { position: fixed; bottom: 40px; right: 50px; display: flex; gap: 20px; z-index: 900;}
-        .btn-move { padding: 20px 50px; font-size: 1.8rem; font-weight: bold; border-radius: 50px; border: none; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        #btn-prev { background: #CBD5E1; color: #333; }
-        #btn-next { background: var(--primary); color: white; }
+        /* 6. 레이아웃 템플릿 */
+        .content-area { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; width: 100%; }
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
+        .image-wrapper { height: 400px; border-radius: 25px; overflow: hidden; box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .tiled-content { display: flex; gap: 30px; width: 100%; }
+        .tile { flex: 1; background: white; padding: 40px; border-radius: 20px; text-align: center; border: 2px solid #f1f5f9; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .tile i { font-size: 60px; color: var(--primary); margin-bottom: 25px; display: block; }
 
-        .quiz-box { margin-top: 30px; }
-        .quiz-opt {
-            background: white; border: 3px solid #E2E8F0; padding: 25px; border-radius: 15px;
-            margin-bottom: 15px; cursor: pointer; font-size: 1.5rem; font-weight: bold; transition: 0.2s;
-        }
-        .quiz-opt:hover { border-color: var(--secondary); background: #F0F7FF; transform: translateX(10px); }
-        .feedback { margin-top: 20px; padding: 20px; border-radius: 15px; font-size: 1.5rem; font-weight: bold; display: none; animation: fadeIn 0.3s; }
-        .feedback.correct { background: #DCFCE7; color: #166534; border: 2px solid #22C55E; }
-        .feedback.wrong { background: #FEE2E2; color: #991B1B; border: 2px solid #EF4444; }
+        .timeline-box { display: flex; justify-content: space-between; position: relative; padding: 40px 0; }
+        .timeline-line { position: absolute; top: 90px; left: 0; width: 100%; height: 6px; background: #e2e8f0; z-index: 1; }
+        .timeline-item { z-index: 2; text-align: center; width: 20%; }
+        .timeline-dot { width: 100px; height: 100px; background: white; border: 6px solid var(--primary); border-radius: 50%; margin: 0 auto 20px; display: flex; justify-content: center; align-items: center; font-size: 45px; }
 
-        #confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; overflow: hidden; }
-        .confetti-emoji { position: absolute; font-size: 3rem; animation: fall 2s ease-in forwards; }
-        @keyframes fall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
-        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+        .footer-nav { height: 80px; display: flex; justify-content: space-between; align-items: center; padding-top: 20px; border-top: 1px solid #f1f5f9; }
     </style>
 </head>
 <body>
 
-    <div id="confetti-container"></div>
+    <div id="slide-master">
+        <div id="confetti"></div>
 
-    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+        <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+        <aside class="sidebar" id="sidebar">
+            <h2 style="font-size: 40px; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 10px;">학습 목차</h2>
+            <div id="nav-list">
+                </div>
+        </aside>
 
-    <nav class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h3>🗺️ 학습 목차</h3>
-            <button class="btn-close-sidebar" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button>
+        <header id="toolbar" style="display: none;">
+            <button class="btn-nav" onclick="toggleSidebar()"><i class="fa-solid fa-list-ul"></i> 목차</button>
+            <div style="margin-left: 20px; display: flex; gap: 10px;">
+                <button class="btn-nav" onclick="toggleZoom()"><i class="fa-solid fa-magnifying-glass-plus"></i> 큰 글씨</button>
+                <button class="btn-nav" onclick="toggleAudio()"><i class="fa-solid fa-volume-high"></i> 소리 모드</button>
+            </div>
+            <div id="progress-indicator" style="margin-left: auto; font-weight: bold; color: #64748b; font-size: 20px;">1 / 15</div>
+        </header>
+
+        <div class="slide-container active" id="slide1">
+            <div class="content-area" style="text-align: center;">
+                <h1 style="font-size: 100px; margin-bottom: 20px;">🗺️ 우리 고장 여행</h1>
+                <p style="font-size: 36px; margin-bottom: 40px;">반가워요! 당신의 이름을 알려주세요.</p>
+                <input type="text" id="name-input-field" class="name-input" placeholder="여기에 이름을 쓰세요" value="">
+                <div>
+                    <button class="btn-action btn-primary" onclick="startCourse()">여행 시작하기 <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
         </div>
-        
-        <div class="menu-group">도입</div>
-        <ul class="menu-list">
-            <li class="menu-item active" id="menu-1" onclick="goToSlide(1)">1. 여행 시작</li>
-            <li class="menu-item" id="menu-2" onclick="goToSlide(2)">2. 공부 목표</li>
-        </ul>
 
-        <div class="menu-group">전개 1: 고장의 의미</div>
-        <ul class="menu-list">
-            <li class="menu-item" id="menu-3" onclick="goToSlide(3)">3. 고장이란?</li>
-            <li class="menu-item" id="menu-4" onclick="goToSlide(4)">4. 영상 보기</li>
-            <li class="menu-item" id="menu-5" onclick="goToSlide(5)">5. 퀴즈: 고장 맞히기</li>
-        </ul>
-
-        <div class="menu-group">전개 2: 영상 지도</div>
-        <ul class="menu-list">
-            <li class="menu-item" id="menu-6" onclick="goToSlide(6)">6. 영상 지도란?</li>
-            <li class="menu-item" id="menu-7" onclick="goToSlide(7)">7. 지도의 특징</li>
-            <li class="menu-item" id="menu-8" onclick="goToSlide(8)">8. 학교 찾기 영상</li>
-            <li class="menu-item" id="menu-9" onclick="goToSlide(9)">9. 퀴즈: 지도 맞히기</li>
-        </ul>
-
-        <div class="menu-group">전개 3: 주요 장소</div>
-        <ul class="menu-list">
-            <li class="menu-item" id="menu-10" onclick="goToSlide(10)">10. 자연 환경</li>
-            <li class="menu-item" id="menu-11" onclick="goToSlide(11)">11. 공공기관</li>
-            <li class="menu-item" id="menu-12" onclick="goToSlide(12)">12. 생활 장소</li>
-            <li class="menu-item" id="menu-13" onclick="goToSlide(13)">13. 퀴즈: 장소 맞히기</li>
-        </ul>
-
-        <div class="menu-group">정리 및 평가</div>
-        <ul class="menu-list">
-            <li class="menu-item" id="menu-14" onclick="goToSlide(14)">14. 내용 정리</li>
-            <li class="menu-item" id="menu-15" onclick="goToSlide(15)">15. 학습 완료</li>
-        </ul>
-    </nav>
-
-    <div class="top-toolbar">
-        <button class="tool-btn" onclick="toggleSidebar()" style="background: var(--primary); color: white; border-color: var(--primary);"><i class="fa-solid fa-list-ul"></i> 목차 열기</button>
-        <button class="tool-btn" onclick="toggleZoom(this)"><i class="fa-solid fa-magnifying-glass-plus"></i> 큰 글씨 모드</button>
-        <button class="tool-btn" onclick="toggleAudio(this)"><i class="fa-solid fa-volume-high"></i> 읽어주기 모드</button>
-        <div class="progress-text" id="progress-indicator">1 / 15</div>
-    </div>
-
-    <div class="slide active" id="p1">
-        <h1>👋 안녕! 우리 고장 여행을 시작할까?</h1>
-        <p>우리가 살고 있는 곳을 재미있게 알아보는 시간이야. 준비됐니?</p>
-        <div class="media-placeholder"><i class="fa-solid fa-bus" style="font-size: 5rem; color: var(--primary); margin-bottom: 20px;"></i><p>[도입 일러스트 배치]</p></div>
-    </div>
-
-    <div class="slide" id="p2">
-        <h2>🎯 오늘의 공부 목표</h2>
-        <p>오늘 우리는 두 가지를 배울 거예요.</p>
-        <ul style="font-size: 1.5em; line-height: 2;">
-            <li>1. 우리가 사는 <span class="word-link" data-tip="사람들이 모여 사는 마을" onclick="speak('고장')">고장</span>의 의미를 안다.</li>
-            <li>2. 디지털 영상 지도로 우리 동네를 찾아본다.</li>
-        </ul>
-    </div>
-
-    <div class="slide" id="p3">
-        <h2>🏡 고장이란 무엇일까요?</h2>
-        <p>'고장'은 여러 사람들이 <strong>모여 사는 곳</strong>을 말해요.</p>
-        <div class="media-placeholder"><p>[활기찬 동네 사진]</p></div>
-    </div>
-
-    <div class="slide" id="p4">
-        <h2>📺 영상으로 만나는 고장</h2>
-        <p>우리 고장에는 어떤 곳들이 있는지 영상을 통해 살펴볼까요?</p>
-        <div class="media-placeholder video"><i class="fa-brands fa-youtube" style="font-size: 5rem; color: red;"></i><p>[유튜브 영상 임베딩]</p></div>
-    </div>
-
-    <div class="slide" id="p5">
-        <h2>💡 퀴즈 1: 고장 맞히기</h2>
-        <p>다음 중 '고장'에 대한 설명으로 알맞은 것은 무엇일까요?</p>
-        <div class="quiz-box">
-            <div class="quiz-opt" onclick="checkQuiz(this, 'q1', false, '틀렸어요. 장난감은 물건이에요.')">1. 내가 아끼는 장난감을 부르는 말</div>
-            <div class="quiz-opt" onclick="checkQuiz(this, 'q1', true, '정답! 고장은 사람들이 모여 사는 곳이에요.')">2. 여러 사람들이 모여서 생활하는 곳</div>
-            <div class="quiz-opt" onclick="checkQuiz(this, 'q1', false, '틀렸어요. 우주선이 나는 곳이 아니에요.')">3. 우주선이 날아가는 곳</div>
+        <div class="slide-container" id="slide2">
+            <div class="content-area" style="text-align: center;">
+                <h2 class="slide-title">오늘의 공부 약속</h2>
+                <p style="font-size: 40px;"><span class="student-name">친구</span>, 오늘 우리는<br>이 두 가지를 꼭 기억할 거예요!</p>
+                <div style="margin-top: 40px; text-align: left; display: inline-block;">
+                    <p>✅ 1. <strong>'고장'</strong>이 무엇인지 알아봐요.</p>
+                    <p>✅ 2. <strong>'디지털 영상 지도'</strong>의 특징을 배워요.</p>
+                </div>
+            </div>
+            <div class="footer-nav">
+                <button class="btn-nav" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i> 이전</button>
+                <button class="btn-nav next" onclick="nextSlide()">다음 <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
         </div>
-        <div id="feedback-q1" class="feedback"></div>
-    </div>
 
-    <div class="slide" id="p6">
-        <h2>🛰️ 하늘에서 본 우리 고장</h2>
-        <p>인공위성에서 사진을 찍어 만든 지도를 <span class="word-link" data-tip="컴퓨터로 보는 인공위성 지도" onclick="speak('디지털 영상 지도')">디지털 영상 지도</span>라고 해요.</p>
-    </div>
-
-    <div class="slide" id="p7">
-        <h2>🔍 디지털 영상 지도의 특징</h2>
-        <ul><li>손가락으로 <strong>확대하고 축소</strong>할 수 있어요.</li><li>건물의 지붕 모양이나 나무의 색깔까지 다 보여요.</li></ul>
-        <div class="media-placeholder"><p>[지도 확대/축소 움짤(GIF)]</p></div>
-    </div>
-
-    <div class="slide" id="p8">
-        <h2>📺 영상 지도로 우리 학교 찾기</h2>
-        <div class="media-placeholder video"><i class="fa-brands fa-youtube" style="font-size: 5rem; color: red;"></i><p>[네이버/카카오 맵 활용법 영상]</p></div>
-    </div>
-
-    <div class="slide" id="p9">
-        <h2>💡 퀴즈 2: 지도 맞히기</h2>
-        <p>사진으로 만들어서 실제 모습과 똑같이 보이는 지도는 무엇일까요?</p>
-        <div class="quiz-box">
-            <div class="quiz-opt" onclick="checkQuiz(this, 'q2', false, '아쉬워요. 그림 지도가 아니에요.')">1. 보물 지도</div>
-            <div class="quiz-opt" onclick="checkQuiz(this, 'q2', true, '정답! 인공위성으로 찍은 디지털 영상 지도예요!')">2. 디지털 영상 지도</div>
+        <div class="slide-container" id="slide3">
+            <h2 class="slide-title">고장이란 무엇일까요?</h2>
+            <div class="content-area">
+                <div class="two-column">
+                    <div style="background: #eef2ff; padding: 40px; border-radius: 25px; border-left: 10px solid var(--primary);">
+                        <p style="font-size: 32px;"><strong>'고장'</strong>은 여러 사람들이<br>함께 <strong>모여 사는 곳</strong>을 말해요.</p>
+                        <p><span class="student-name">친구</span>가 사는 아파트와 골목길이 모두 고장의 모습이랍니다.</p>
+                    </div>
+                    <div class="image-wrapper">
+                        <img src="http://googleusercontent.com/image_collection/image_retrieval/4810897283581562099" alt="우리 동네의 평화로운 모습">
+                    </div>
+                </div>
+            </div>
+            <div class="footer-nav">
+                <button class="btn-nav" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i> 이전</button>
+                <button class="btn-nav next" onclick="nextSlide()">다음 <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
         </div>
-        <div id="feedback-q2" class="feedback"></div>
-    </div>
 
-    <div class="slide" id="p10">
-        <h2>🌲 고장의 자연 환경</h2>
-        <p>우리 고장에는 산, 강, 들판 같은 <strong>자연</strong>이 있어요.</p>
-        <div class="media-placeholder"><p>[자연 환경 사진]</p></div>
-    </div>
-
-    <div class="slide" id="p11">
-        <h2>🏫 고장의 공공기관</h2>
-        <p>우리를 도와주는 중요한 곳들을 <span class="word-link" data-tip="국가가 세운 도움을 주는 기관" onclick="speak('공공기관')">공공기관</span>이라고 해요.</p>
-        <ul><li>소방서, 경찰서, 시청 등이 있어요.</li></ul>
-    </div>
-
-    <div class="slide" id="p12">
-        <h2>🛒 고장의 생활 장소</h2>
-        <p>재래시장, 대형 마트, 병원, 은행처럼 매일매일 필요한 곳들이에요.</p>
-        <div class="media-placeholder"><p>[생활 장소 사진]</p></div>
-    </div>
-
-    <div class="slide" id="p13">
-        <h2>💡 퀴즈 3: 장소 맞히기</h2>
-        <p>불이 났을 때 우리를 도와주는 '공공기관'은 어디일까요?</p>
-        <div class="quiz-box">
-            <div class="quiz-opt" onclick="checkQuiz(this, 'q3', true, '대단해요! 소방관님들이 불을 꺼주신답니다.')">1. 소방서</div>
-            <div class="quiz-opt" onclick="checkQuiz(this, 'q3', false, '아니에요. 문구점이 아니에요.')">2. 문구점</div>
+        <div class="slide-container" id="slide4">
+            <h2 class="slide-title">고장에는 어떤 곳이 있나요?</h2>
+            <div class="content-area">
+                <div class="two-column">
+                    <div>
+                        <p>우리가 매일 가는 곳들을 떠올려 보세요.</p>
+                        <ul>
+                            <li>공부하는 <strong>학교</strong></li>
+                            <li>물건을 사는 <strong>시장</strong></li>
+                            <li>편안히 쉬는 <strong>공원</strong></li>
+                        </ul>
+                        <p><span class="student-name">친구</span>는 어디를 제일 좋아하나요?</p>
+                    </div>
+                    <div class="image-wrapper">
+                        <img src="http://googleusercontent.com/image_collection/image_retrieval/10131441762442131618" alt="활기찬 시장의 모습" style="object-fit: contain;">
+                    </div>
+                </div>
+            </div>
+            <div class="footer-nav">
+                <button class="btn-nav" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i> 이전</button>
+                <button class="btn-nav next" onclick="nextSlide()">다음 <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
         </div>
-        <div id="feedback-q3" class="feedback"></div>
-    </div>
 
-    <div class="slide" id="p14">
-        <h2>📝 오늘 배운 내용 정리하기</h2>
-        <div style="background: #F1F5F9; padding: 30px; border-radius: 20px; border-left: 10px solid var(--primary);">
-            <p>1. <strong>고장</strong>은 사람들이 모여 사는 곳이에요.</p>
-            <p>2. <strong>디지털 영상 지도</strong>를 보면 실제 모습을 자세히 알 수 있어요.</p>
-            <p>3. 고장에는 자연, 공공기관 등 <strong>다양한 장소</strong>가 있어요.</p>
+        <div class="slide-container" id="slide5" style="background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('http://googleusercontent.com/image_collection/image_retrieval/4810897283581562099'); background-size: cover; background-position: center;">
+            <div class="content-area" style="text-align: center;">
+                <h2 style="font-size: 70px; margin-bottom: 30px; color: var(--primary);">영상을 보며 여행해요! 📺</h2>
+                <p style="font-size: 32px; background: white; padding: 20px; display: inline-block; border-radius: 15px;">선생님이 준비한 2분 영상을 함께 감상해 볼까요?</p>
+                <div style="margin-top: 40px; width: 800px; height: 350px; background: #000; margin: 40px auto; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white;">
+                    <p style="font-size: 24px;"><i class="fa-brands fa-youtube" style="font-size: 60px; color: red; display: block; margin-bottom: 20px;"></i> [ 여기에 유튜브 임베딩 코드를 넣어주세요 ]</p>
+                </div>
+            </div>
+            <div class="footer-nav">
+                <button class="btn-nav" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i> 이전</button>
+                <button class="btn-nav next" onclick="nextSlide()">다음 <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
         </div>
-    </div>
 
-    <div class="slide" id="p15">
-        <h2>🌟 오늘 공부 끝!</h2>
-        <h1 style="font-size: 5rem; text-align: center; margin-top: 50px;">참 잘했어요 💯</h1>
-        <div style="display: flex; justify-content: center; gap: 30px; margin-top: 40px;">
-            <div style="font-size: 4rem; cursor: pointer;" onclick="alert('좋았어요!')">😄</div>
-            <div style="font-size: 4rem; cursor: pointer;" onclick="alert('보통이에요')">😐</div>
-            <div style="font-size: 4rem; cursor: pointer;" onclick="alert('어려웠어요')">🤔</div>
+        <div class="slide-container" id="slide6">
+            <h2 class="slide-title">깜짝 퀴즈 타임! 💡</h2>
+            <div class="content-area">
+                <p style="font-size: 36px; margin-bottom: 40px;"><strong>Q. 사람들이 모여서 함께 사는 곳을 무엇이라고 부를까요?</strong></p>
+                <div class="quiz-option" onclick="checkQuiz(this, false, '아쉽네요! 사과는 맛있는 과일이에요. 동네는 고장이라고 불러요.')">
+                    <span style="background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">1</span>
+                    맛있는 사과
+                </div>
+                <div class="quiz-option" onclick="checkQuiz(this, true, '정답이에요! 참 잘했어요. 사람들은 고장에서 함께 모여 살아요.')">
+                    <span style="background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">2</span>
+                    우리 고장
+                </div>
+                <div id="feedback-slide6" class="feedback-box"></div>
+            </div>
+            <div class="footer-nav">
+                <button class="btn-nav" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i> 이전</button>
+                <button class="btn-nav next" onclick="nextSlide()">다음 <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
         </div>
-    </div>
 
-    <div class="nav-footer">
-        <button id="btn-prev" class="btn-move" onclick="moveSlide(-1)">이전</button>
-        <button id="btn-next" class="btn-move" onclick="moveSlide(1)">다음</button>
+        <div class="slide-container" id="slide7">
+            <div class="content-area" style="text-align: center;">
+                <h2 style="font-size: 80px; color: var(--accent);">하늘에서 고장을 봐요! 🛰️</h2>
+                <hr style="width: 150px; border: 4px solid var(--accent); margin: 40px auto;">
+                <p style="font-size: 32px;"><span class="student-name">친구</span>, 인공위성으로 찍은 사진 지도를<br>공부할 준비 됐나요?</p>
+            </div>
+            <div class="footer-nav">
+                <button class="btn-nav" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i> 이전</button>
+                <button class="btn-nav next" onclick="nextSlide()">다음 <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div class="slide-container" id="slide8">
+            <h2 class="slide-title">디지털 영상 지도의 좋은 점</h2>
+            <div class="content-area">
+                <div class="tiled-content">
+                    <div class="tile"><i class="fa-solid fa-magnifying-glass-plus"></i><h3>크게 봐요</h3><p>손가락으로 쓱쓱 밀면 아주 자세히 볼 수 있어요.</p></div>
+                    <div class="tile"><i class="fa-solid fa-camera"></i><h3>똑같아요</h3><p>진짜 사진이라서 실제 모습과 똑같아요.</p></div>
+                    <div class="tile"><i class="fa-solid fa-location-dot"></i><h3>길 찾기</h3><p>어디든 검색만 하면 바로 찾아줘요.</p></div>
+                </div>
+            </div>
+            <div class="footer-nav">
+                <button class="btn-nav" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i> 이전</button>
+                <button class="btn-nav next" onclick="nextSlide()">다음 <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div class="slide-container" id="slide9" style="padding: 0; display: none;">
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); height: 100%; align-items: start;">
+                <div style="padding: 80px;">
+                    <h2 class="slide-title">직접 찾아볼까요?</h2>
+                    <p><span class="student-name">친구</span>, 영상 지도에서는 학교 운동장도 보여요.</p>
+                    <p>우리 학교의 지붕은 어떤 색깔일까요? 실제 사진 지도를 보며 확인해 봐요.</p>
+                </div>
+                <div style="height: 720px; overflow: hidden;">
+                    <img src="http://googleusercontent.com/image_collection/image_retrieval/9358394389319520363" alt="디지털 영상 지도의 모습" style="width: 100%; height: 720px; object-fit: cover;">
+                </div>
+            </div>
+            <div style="position: absolute; bottom: 40px; left: 80px;">
+                <button class="btn-nav" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i> 이전</button>
+                <button class="btn-nav next" onclick="nextSlide()">다음 <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div class="slide-container" id="slide10">
+            <h2 class="slide-title">우리를 도와주는 소중한 곳</h2>
+            <div class="content-area">
+                <div class="tiled-content">
+                    <div class="tile"><i class="fa-solid fa-school" style="color: #6366f1;"></i><h3>학교</h3><p>우리가 재미있게 공부하는 곳이에요.</p></div>
+                    <div class="tile"><i class="fa-solid fa-fire-extinguisher" style="color: #ef4444;"></i><h3>소방서</h3><p>불이 났을 때 우리를 구해줘요.</p></div>
+                    <div class="tile"><i class="fa-solid fa-shield-halved" style="color: #3b82f6;"></i><h3>경찰서</h3><p>나쁜 사람을 잡고 우리를 지켜줘요.</p></div>
+                </div>
+            </div>
+            <div class="footer-nav">
+                <button class="btn-nav" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i> 이전</button>
+                <button class="btn-nav next" onclick="nextSlide()">다음 <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div class="slide-container" id="slide11">
+            <h2 class="slide-title">북적북적 우리 시장</h2>
+            <div class="content-area">
+                <div class="two-column" style="align-items: center;">
+                    <div class="image-wrapper" style="border-radius: 50%; height: 450px; width: 450px; margin: 0 auto;">
+                        <img src="http://googleusercontent.com/image_collection/image_retrieval/10131441762442131618" alt="활기찬 재래 시장" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div>
+                        <p style="font-size: 32px;"><strong>전통 시장</strong>은 물건을 사고파는<br>정겨운 곳이에요.</p>
+                        <p><span class="student-name">친구</span>는 시장에서 무엇을 먹어보고 싶나요? 상상해서 말해 보세요!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-nav">
+                <button class="btn-nav" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i> 이전</button>
+                <button class="btn-nav next" onclick="nextSlide()">다음 <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div class="slide-container" id="slide12">
+            <h2 class="slide-title">누가 도와줄까요? 🚑</h2>
+            <div class="content-area">
+                <p style="font-size: 36px; margin-bottom: 40px;"><strong>Q. 몸이 아프거나 다쳤을 때 치료를 도와주는 곳은 어디일까요?</strong></p>
+                <div class="quiz-option" onclick="checkQuiz(this, false, '아쉽네요! 꽃집은 예쁜 꽃을 선물하는 곳이에요.')">
+                    <span style="background: var(--accent); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">1</span>
+                    꽃집
+                </div>
+                <div class="quiz-option" onclick="checkQuiz(this, true, '딩동댕! 정답이에요. 병원에 가면 의사 선생님이 우리를 고쳐주세요.')">
+                    <span style="background: var(--accent); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center;">2</span>
+                    병원
+                </div>
+                <div id="feedback-slide12" class="feedback-box"></div>
+            </div>
+            <div class="footer-nav">
+                <button class="btn-nav" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i> 이전</button>
+                <button class="btn-nav next" onclick="nextSlide()">다음 <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div class="slide-container" id="slide13">
+            <h2 class="slide-title">오늘 배운 내용을 정리해요</h2>
+            <div class="content-area">
+                <div class="timeline-box">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-item"><div class="timeline-dot">🏠</div><p>고장의 의미</p></div>
+                    <div class="timeline-item"><div class="timeline-dot">🛰️</div><p>영상 지도</p></div>
+                    <div class="timeline-item"><div class="timeline-dot">🏫</div><p>공공기관</p></div>
+                    <div class="timeline-item"><div class="timeline-dot">🛒</div><p>생활 장소</p></div>
+                </div>
+            </div>
+            <div class="footer-nav">
+                <button class="btn-nav" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i> 이전</button>
+                <button class="btn-nav next" onclick="nextSlide()">다음 <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div class="slide-container" id="slide14">
+            <h2 class="slide-title">오늘 공부는 어땠나요?</h2>
+            <div class="content-area" style="text-align: center;">
+                <p style="font-size: 32px; margin-bottom: 50px;"><span class="student-name">친구</span>, 오늘 지리 공부 재미있었나요?<br>자신의 마음을 클릭해 보세요!</p>
+                <div style="display: flex; justify-content: center; gap: 50px;">
+                    <div style="cursor: pointer; transition: 0.2s;" onclick="alert('정말 최고였군요! 기뻐요.')">
+                        <div style="font-size: 100px;">😄</div>
+                        <p style="font-weight: bold;">좋았어요!</p>
+                    </div>
+                    <div style="cursor: pointer; transition: 0.2s;" onclick="alert('보통이었군요! 다음에는 더 재미있게 해봐요.')">
+                        <div style="font-size: 100px;">😐</div>
+                        <p style="font-weight: bold;">보통이에요</p>
+                    </div>
+                    <div style="cursor: pointer; transition: 0.2s;" onclick="alert('조금 어려웠군요! 선생님이 다시 도와줄게요.')">
+                        <div style="font-size: 100px;">🤔</div>
+                        <p style="font-weight: bold;">어려웠어요</p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-nav">
+                <button class="btn-nav" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i> 이전</button>
+                <button class="btn-nav next" onclick="nextSlide()">다음 <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div class="slide-container" id="slide15">
+            <div class="content-area" style="text-align: center;">
+                <div style="margin-bottom: 30px;">
+                    <img src="http://googleusercontent.com/image_collection/image_retrieval/16657958969326407320" alt="성취 트로피" style="width: 250px;">
+                </div>
+                <h2 style="font-size: 80px; color: var(--primary);"><span class="student-name">남주</span> 친구 최고!</h2>
+                <p style="font-size: 36px; margin-top: 20px;">오늘 정말 열심히 공부했어요.<br>다음 시간에 또 만나요!</p>
+                <div style="margin-top: 40px;">
+                    <button class="btn-action btn-primary" onclick="location.reload()">처음으로 돌아가기</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        let currentIdx = 1;
+        let currentSlide = 1;
         const totalSlides = 15;
-
-        // ------------------------------------------------
-        // 앵커바 (목차) 기능
-        // ------------------------------------------------
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.querySelector('.sidebar-overlay').classList.toggle('show');
-        }
-
-        // 특정 슬라이드로 바로 이동하는 함수
-        function goToSlide(n) {
-            if (n < 1 || n > totalSlides) return;
-            
-            // 기존 슬라이드 숨기고 새 슬라이드 표시
-            document.getElementById('p' + currentIdx).classList.remove('active');
-            document.getElementById('p' + n).classList.add('active');
-            currentIdx = n;
-            
-            // UI 업데이트
-            updateNavButtons();
-            updateSidebarActive();
-            
-            // 목차 닫기
-            if(document.getElementById('sidebar').classList.contains('open')) {
-                toggleSidebar();
-            }
-
-            // 음성 모드일 경우 제목 읽어주기
-            if (isAudioOn) {
-                let title = document.querySelector('#p' + currentIdx + ' h1, #p' + currentIdx + ' h2').innerText;
-                speak(title);
-            }
-        }
-
-        // 목차에서 현재 위치에 색상(Active) 표시 업데이트
-        function updateSidebarActive() {
-            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-            let currentMenu = document.getElementById('menu-' + currentIdx);
-            if(currentMenu) currentMenu.classList.add('active');
-        }
-
-        // ------------------------------------------------
-        // 기존 하단 이전/다음 버튼 로직 연동
-        // ------------------------------------------------
-        function moveSlide(step) {
-            const next = currentIdx + step;
-            if (next < 1) return;
-            if (next > totalSlides) { location.reload(); return; }
-            
-            goToSlide(next); // goToSlide 함수를 재사용하여 사이드바 상태도 동시 업데이트
-        }
-
-        function updateNavButtons() {
-            document.getElementById('btn-prev').style.display = (currentIdx === 1) ? 'none' : 'block';
-            document.getElementById('btn-next').innerText = (currentIdx === totalSlides) ? '처음으로' : '다음';
-            document.getElementById('progress-indicator').innerText = `${currentIdx} / ${totalSlides}`;
-        }
-
-        // 초기 세팅
-        updateNavButtons();
-        updateSidebarActive();
-
-        // ------------------------------------------------
-        // UDL 및 상호작용 기능
-        // ------------------------------------------------
-        function toggleZoom(btn) {
-            document.body.classList.toggle('zoom-in');
-            btn.classList.toggle('active');
-        }
-
+        let userName = "";
         let isAudioOn = false;
-        function toggleAudio(btn) {
+
+        // 1. 초기 세팅: 목차 리스트 생성
+        const titles = [
+            "1. 여행 시작", "2. 공부 약속", "3. 고장의 의미", "4. 고장의 장소", 
+            "5. 영상 학습", "6. 첫 번째 퀴즈", "7. 하늘에서 본 고장", "8. 영상 지도의 장점", 
+            "9. 지도 찾아보기", "10. 우리 공공기관", "11. 북적북적 시장", "12. 두 번째 퀴즈", 
+            "13. 학습 정리", "14. 공부 소감", "15. 마무리"
+        ];
+
+        const navList = document.getElementById('nav-list');
+        titles.forEach((title, index) => {
+            const item = document.createElement('div');
+            item.className = 'nav-item' + (index === 0 ? ' active' : '');
+            item.id = 'nav-item-' + (index + 1);
+            item.innerText = title;
+            item.onclick = () => jumpToSlide(index + 1);
+            navList.appendChild(item);
+        });
+
+        // 2. 이름 입력 및 시작 함수
+        function startCourse() {
+            const input = document.getElementById('name-input-field');
+            userName = input.value.trim();
+            if (!userName) userName = "친구";
+            
+            // 이름 변수 모든 곳에 적용
+            const nameSpans = document.querySelectorAll('.student-name');
+            nameSpans.forEach(span => span.innerText = userName);
+            
+            // 툴바 보이기
+            document.getElementById('toolbar').style.display = 'flex';
+            
+            nextSlide();
+        }
+
+        // 3. 내비게이션 함수
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                jumpToSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                jumpToSlide(currentSlide - 1);
+            }
+        }
+
+        function jumpToSlide(n) {
+            // 현재 슬라이드 끄기
+            document.getElementById('slide' + currentSlide).classList.remove('active');
+            
+            // 새 슬라이드 켜기
+            currentSlide = n;
+            const target = document.getElementById('slide' + currentSlide);
+            target.classList.add('active');
+            
+            // 진행 표시 업데이트
+            document.getElementById('progress-indicator').innerText = currentSlide + " / " + totalSlides;
+            
+            // 목차 하이라이트 업데이트
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.getElementById('nav-item-' + currentSlide).classList.add('active');
+            
+            // 사이드바 닫기
+            closeSidebar();
+
+            // UDL 음성 지원 모드인 경우 제목 읽어주기 (시뮬레이션)
+            if (isAudioOn) {
+                const titleText = target.querySelector('h2, h1').innerText;
+                speak(titleText);
+            }
+        }
+
+        // 4. 사이드바 (앵커 바) 제어
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('overlay').classList.remove('active');
+        }
+
+        // 5. UDL 편의 기능 (줌, 오디오)
+        function toggleZoom() {
+            document.body.classList.toggle('zoom-mode');
+            const isZoomed = document.body.classList.contains('zoom-mode');
+            alert(isZoomed ? "큰 글씨 모드가 켜졌습니다." : "일반 글씨 모드입니다.");
+        }
+
+        function toggleAudio() {
             isAudioOn = !isAudioOn;
-            btn.classList.toggle('active');
-            if(isAudioOn) speak("읽어주기 모드가 켜졌습니다. 목차를 열어 원하는 곳으로 갈 수 있어요.");
+            alert(isAudioOn ? "읽어주기 모드가 켜졌습니다. 페이지 제목을 읽어줍니다." : "읽어주기 모드가 꺼졌습니다.");
         }
 
         function speak(text) {
-            if(!isAudioOn) return;
-            window.speechSynthesis.cancel();
-            const msg = new SpeechSynthesisUtterance(text);
-            msg.lang = 'ko-KR'; msg.rate = 0.9;
-            window.speechSynthesis.speak(msg);
+            // 실제 웹 브라우저 TTS 호출 (Web Speech API)
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ko-KR';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            }
         }
 
-        function checkQuiz(element, quizId, isCorrect, explanation) {
-            let feedbackBox = document.getElementById('feedback-' + quizId);
-            feedbackBox.style.display = 'block';
-            feedbackBox.innerText = explanation;
-
+        // 6. 퀴즈 정답 확인 및 축하 애니메이션
+        function checkQuiz(element, isCorrect, feedback) {
+            const slideId = element.closest('.slide-container').id;
+            const fbBox = document.getElementById('feedback-' + slideId);
+            fbBox.style.display = 'block';
+            fbBox.innerText = feedback;
+            
             if (isCorrect) {
-                feedbackBox.className = 'feedback correct';
-                showConfetti();
+                fbBox.className = 'feedback-box correct';
+                launchConfetti();
+                speak("정답입니다! " + feedback);
             } else {
-                feedbackBox.className = 'feedback wrong';
+                fbBox.className = 'feedback-box wrong';
+                speak("아쉬워요. " + feedback);
             }
-            speak(explanation);
         }
 
-        function showConfetti() {
-            const container = document.getElementById('confetti-container');
-            const emojis = ['🎉', '✨', '🎈', '⭐'];
+        function launchConfetti() {
+            const container = document.getElementById('confetti');
+            container.style.display = 'block';
+            const emojis = ['🎉', '✨', '🎈', '⭐', '🎊'];
+            
             for (let i = 0; i < 30; i++) {
-                let confetti = document.createElement('div');
-                confetti.className = 'confetti-emoji';
-                confetti.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.animationDuration = (Math.random() * 2 + 1) + 's';
-                container.appendChild(confetti);
-                setTimeout(() => { confetti.remove(); }, 3000);
+                const emoji = document.createElement('div');
+                emoji.className = 'emoji-fall';
+                emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                emoji.style.left = Math.random() * 100 + 'vw';
+                emoji.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                container.appendChild(emoji);
+                
+                setTimeout(() => emoji.remove(), 2500);
             }
+            setTimeout(() => container.style.display = 'none', 3000);
         }
     </script>
 </body>
