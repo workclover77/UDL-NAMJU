@@ -29,7 +29,7 @@
             font-size: calc(var(--base-font-size) + var(--zoom-inc));
         }
 
-        /* 2. 슬라이드 마스터 프레임 (PC/태블릿 가로 모드 기본) */
+        /* 2. 슬라이드 마스터 프레임 */
         #deck {
             aspect-ratio: 16 / 9;
             width: 100%; max-width: 1280px;
@@ -40,45 +40,60 @@
             border-radius: 12px;
         }
 
-        /* 3. 상단 툴바 (줄바꿈 허용 & 찌그러짐 방지) */
+        /* 3. 상단 툴바 (버튼 사이즈 확대 및 줄바꿈 절대 방지) */
         #header-bar {
             position: absolute; top: 0; left: 0; width: 100%;
             background: white; border-bottom: 2px solid #eee;
-            display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start;
-            padding: 10px 20px; gap: 15px; z-index: 1000;
-            min-height: 70px;
+            display: flex; align-items: center; justify-content: flex-start;
+            padding: 10px 20px; gap: 20px; z-index: 1000;
+            min-height: 75px;
             padding-top: env(safe-area-inset-top, 10px);
+            flex-wrap: nowrap; /* 툴바 전체 줄바꿈 방지 */
+            overflow-x: auto; /* 화면이 극단적으로 좁아질 경우를 대비한 보험 */
+            -ms-overflow-style: none; scrollbar-width: none;
+        }
+        #header-bar::-webkit-scrollbar { display: none; }
+
+        .btn-header {
+            padding: 12px 25px; /* 버튼 가로세로 여백 넉넉하게 */
+            min-width: 120px; /* 최소 너비 보장 */
+            font-size: 16px; border-radius: 8px; 
+            background: #e2e8f0; color: #444; font-weight: bold; border: none; cursor: pointer;
+            white-space: nowrap; word-break: keep-all; /* 내부 글자 줄바꿈 절대 방지 */
+            flex-shrink: 0;
         }
 
         .toolbar-section { 
-            display: flex; align-items: center; gap: 10px; 
-            white-space: nowrap; flex-shrink: 0; /* 글씨 찢어짐 원천 차단 */
+            display: flex; align-items: center; gap: 15px; 
+            white-space: nowrap; flex-shrink: 0; 
         }
         .toolbar-label { font-weight: bold; font-size: 16px; color: #666; }
 
-        .zoom-group { display: flex; gap: 5px; flex-shrink: 0; }
+        .zoom-group { display: flex; gap: 8px; flex-shrink: 0; }
         .zoom-group label {
-            padding: 8px 14px; background: #f1f5f9; border-radius: 6px; cursor: pointer; 
-            font-size: 15px; font-weight: bold; color: #444; border: 2px solid transparent; transition: 0.2s;
-            white-space: nowrap;
+            padding: 12px 24px; /* 줌 버튼 사이즈 넉넉하게 확대 */
+            min-width: 90px; text-align: center;
+            background: #f1f5f9; border-radius: 8px; cursor: pointer; 
+            font-size: 16px; font-weight: bold; color: #444; border: 2px solid transparent; transition: 0.2s;
+            white-space: nowrap; word-break: keep-all; /* 내부 글자 줄바꿈 절대 방지 */
         }
         .zoom-group input:checked + label { background: var(--m-blue); color: white; border-color: var(--m-blue); }
         .zoom-group input { display: none; }
 
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; flex-shrink: 0; }
+        .switch { position: relative; display: inline-block; width: 60px; height: 30px; flex-shrink: 0; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--m-blue); }
-        input:checked + .slider:before { transform: translateX(24px); }
+        input:checked + .slider:before { transform: translateX(30px); }
 
         /* 4. 슬라이드 영역 (스크롤 허용) */
         .slide {
             width: 100%; height: 100%; display: none;
-            padding: 90px 60px 100px 60px; /* 툴바/하단바 여백 */
+            padding: 100px 60px 100px 60px; 
             flex-direction: column;
             background: linear-gradient(to bottom right, #ffffff, #f0f4f8);
-            overflow-y: auto; /* 내용 넘치면 스크롤 */
+            overflow-y: auto; 
             -ms-overflow-style: none; scrollbar-width: none;
         }
         .slide::-webkit-scrollbar { display: none; }
@@ -93,7 +108,7 @@
             padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
         }
         .btn-move { 
-            padding: 12px 30px; font-size: 18px; border-radius: 50px; border: none; 
+            padding: 15px 35px; font-size: 18px; border-radius: 50px; border: none; 
             cursor: pointer; font-weight: bold; transition: 0.2s;
             white-space: nowrap; flex-shrink: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
@@ -125,7 +140,7 @@
         .tiled-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .image-placeholder { width: 100%; min-height: 250px; background: #e2e8f0; border-radius: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 3px dashed #cbd5e1; color: #94a3b8; font-weight: bold; font-size: 1.2em; text-align: center; }
         .tile-box { background: white; padding: 30px 20px; border-radius: 15px; text-align: center; border: 2px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .quiz-opt { padding: 20px; border: 3px solid #eee; border-radius: 12px; margin-bottom: 15px; cursor: pointer; font-weight: bold; background: white; font-size: 1.1em; transition: 0.2s; }
+        .quiz-opt { padding: 25px; border: 3px solid #eee; border-radius: 12px; margin-bottom: 15px; cursor: pointer; font-weight: bold; background: white; font-size: 1.1em; transition: 0.2s; }
         .quiz-opt:hover { border-color: var(--m-blue); background: #f8faff; }
 
         /* 8. 모달 & 오버레이 & 애니메이션 */
@@ -133,9 +148,9 @@
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 5000;
         }
-        #ui-modal { background: white; padding: 30px; border-radius: 15px; text-align: center; width: 80%; max-width: 400px; border: 4px solid var(--m-blue); }
-        #ui-modal p { font-size: 1.2em; margin-bottom: 25px; line-height: 1.5; font-weight: bold; }
-        .modal-btn { padding: 12px 30px; background: var(--m-blue); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; font-weight: bold; }
+        #ui-modal { background: white; padding: 40px; border-radius: 15px; text-align: center; width: 80%; max-width: 450px; border: 4px solid var(--m-blue); }
+        #ui-modal p { font-size: 1.3em; margin-bottom: 25px; line-height: 1.5; font-weight: bold; }
+        .modal-btn { padding: 15px 40px; background: var(--m-blue); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1.1em; font-weight: bold; }
 
         #welcome-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -149,18 +164,11 @@
         .confetti-piece { position: absolute; font-size: 30px; animation: fall 2.5s linear forwards; }
         @keyframes fall { 0% { top: -50px; transform: rotate(0deg); opacity: 1; } 100% { top: 110%; transform: rotate(360deg); opacity: 0; } }
 
-        /* ========================================= */
-        /* 📱 모바일(세로) 반응형 디자인 (Media Query) */
-        /* ========================================= */
+        /* 모바일(세로) 반응형 디자인 */
         @media (max-width: 768px), (orientation: portrait) {
-            #deck {
-                aspect-ratio: auto; /* 16:9 비율 해제 */
-                width: 100dvw; height: 100dvh; border-radius: 0;
-            }
-            .slide { 
-                padding: 130px 20px 100px 20px; /* 툴바가 2줄이 되므로 상단 패딩 증가 */
-            }
-            .two-col, .tiled-grid { grid-template-columns: 1fr; gap: 20px; } /* 1단 세로 정렬 */
+            #deck { aspect-ratio: auto; width: 100dvw; height: 100dvh; border-radius: 0; }
+            .slide { padding: 120px 20px 100px 20px; }
+            .two-col, .tiled-grid { grid-template-columns: 1fr; gap: 20px; }
             .footer-bar { padding: 15px 20px; padding-bottom: calc(15px + env(safe-area-inset-bottom, 0px)); }
             .title-txt { font-size: 1.8em; margin-bottom: 20px; }
             .image-placeholder { min-height: 200px; }
@@ -171,9 +179,9 @@
 
     <div id="deck">
         <header id="header-bar">
-            <button class="btn-move" style="padding: 10px 15px; font-size: 16px; border-radius: 8px;" onclick="openSidebar()"><i class="fa-solid fa-bars"></i> 목차</button>
+            <button class="btn-header" onclick="openSidebar()"><i class="fa-solid fa-bars"></i> 목차 열기</button>
             
-            <div class="toolbar-section">
+            <div class="toolbar-section" style="margin-left: 20px;">
                 <span class="toolbar-label">글씨 크기:</span>
                 <div class="zoom-group">
                     <input type="radio" name="z" id="z1" value="0" checked onchange="updateZoom(0)"><label for="z1">크게</label>
@@ -182,13 +190,13 @@
                 </div>
             </div>
 
-            <div class="toolbar-section">
+            <div class="toolbar-section" style="margin-left: 20px;">
                 <span class="toolbar-label">소리 모드:</span>
                 <label class="switch">
                     <input type="checkbox" id="audio-toggle" onchange="onAudioToggle()">
                     <span class="slider"></span>
                 </label>
-                <span id="audio-status" style="font-size: 15px; font-weight: bold; color: #666;">OFF</span>
+                <span id="audio-status" style="font-size: 16px; font-weight: bold; color: #666;">OFF</span>
             </div>
         </header>
 
@@ -208,20 +216,20 @@
         </div>
 
         <div id="welcome-overlay">
-            <h1 style="font-size: 3em; color: var(--m-blue);">환영해, <span class="name-var">학생</span>!</h1>
-            <p style="font-size: 1.5em; margin-top: 20px;">우리 함께 멋진 여행을 떠나보자!</p>
-            <div style="font-size: 5em; margin-top: 30px;">🎉✨</div>
+            <h1 style="font-size: 3.5em; color: var(--m-blue);">환영해, <span class="name-var">학생</span>!</h1>
+            <p style="font-size: 1.8em; margin-top: 20px;">우리 함께 멋진 여행을 떠나보자!</p>
+            <div style="font-size: 6em; margin-top: 30px;">🎉✨</div>
         </div>
 
         <div id="confetti-container"></div>
 
         <div class="slide active" id="slide1">
-            <div style="text-align: center; margin-top: 10vh;">
-                <h1 style="font-size: 3em; color: var(--m-blue); margin-bottom: 20px;">🗺️ 우리 고장 여행</h1>
+            <div style="text-align: center; margin-top: 5vh;">
+                <h1 style="font-size: 3.5em; color: var(--m-blue); margin-bottom: 20px;">🗺️ 우리 고장 여행</h1>
                 <p style="margin-bottom: 40px; font-size: 1.3em;">안녕! 즐거운 <span class="udl-word" data-tip="집을 떠나 다른 곳을 구경함">여행</span>을 시작할까? 이름을 알려줘!</p>
-                <input type="text" id="name-in" style="padding: 15px; font-size: 1.2em; width: 80%; max-width: 300px; border: 3px solid #cbd5e1; border-radius: 12px; text-align: center;" placeholder="이름 입력">
-                <div style="margin-top: 40px;">
-                    <button class="btn-next btn-move" style="font-size: 1.2em; padding: 15px 40px;" onclick="doStart()">시작하기 <i class="fa-solid fa-rocket"></i></button>
+                <input type="text" id="name-in" style="padding: 15px; font-size: 1.2em; width: 80%; max-width: 350px; border: 3px solid #cbd5e1; border-radius: 12px; text-align: center;" placeholder="이름 입력">
+                <div style="margin-top: 50px;">
+                    <button class="btn-next btn-move" style="font-size: 1.3em; padding: 18px 50px;" onclick="doStart()">시작하기 <i class="fa-solid fa-rocket"></i></button>
                 </div>
             </div>
         </div>
@@ -229,10 +237,10 @@
         <div class="slide" id="slide2">
             <h2 class="title-txt">공부할 내용</h2>
             <div>
-                <p style="font-size: 1.2em;"><span class="name-var">학생</span>, 오늘 우리는 이 두 가지를 꼭 <span class="udl-word" data-tip="잊지 않고 머릿속에 담음">기억</span>할 거야!</p>
-                <div style="background: #f8fafc; padding: 30px; border-radius: 15px; margin-top: 30px; border: 2px solid #e2e8f0;">
-                    <p style="font-size: 1.2em; font-weight: bold; margin-bottom: 15px;">✅ 1. 고장이 무엇인지 알아봐요.</p>
-                    <p style="font-size: 1.2em; font-weight: bold;">✅ 2. 디지털 지도로 우리 동네를 찾아봐요.</p>
+                <p style="font-size: 1.3em;"><span class="name-var">학생</span>, 오늘 우리는 이 두 가지를 꼭 <span class="udl-word" data-tip="잊지 않고 머릿속에 담음">기억</span>할 거야!</p>
+                <div style="background: #f8fafc; padding: 40px; border-radius: 15px; margin-top: 40px; border: 2px solid #e2e8f0;">
+                    <p style="font-size: 1.3em; font-weight: bold; margin-bottom: 20px;">✅ 1. 고장이 무엇인지 알아봐요.</p>
+                    <p style="font-size: 1.3em; font-weight: bold;">✅ 2. 디지털 지도로 우리 동네를 찾아봐요.</p>
                 </div>
             </div>
             <div class="footer-bar">
@@ -244,12 +252,12 @@
         <div class="slide" id="slide3">
             <h2 class="title-txt">고장이란?</h2>
             <div class="two-col">
-                <div style="background: #f0f4ff; padding: 30px; border-radius: 15px;">
-                    <p style="font-size: 1.2em; line-height: 1.6;">여러 사람들이 함께 <span class="udl-word" data-tip="한곳에 무리지어 삼">모여 사는</span> 곳을 말해요.</p>
-                    <p style="font-size: 1.2em; line-height: 1.6; margin-top: 20px;"><span class="name-var">학생</span>가 매일 다니는 동네 골목이 바로 '고장'이야!</p>
+                <div style="background: #f0f4ff; padding: 40px; border-radius: 15px;">
+                    <p style="font-size: 1.3em; line-height: 1.6;">여러 사람들이 함께 <span class="udl-word" data-tip="한곳에 무리지어 삼">모여 사는</span> 곳을 말해요.</p>
+                    <p style="font-size: 1.3em; line-height: 1.6; margin-top: 25px;"><span class="name-var">학생</span>가 매일 다니는 동네 골목이 바로 '고장'이야!</p>
                 </div>
                 <div class="image-placeholder">
-                    <i class="fa-solid fa-house-chimney" style="font-size: 3em; display: block; margin-bottom: 10px;"></i>
+                    <i class="fa-solid fa-house-chimney" style="font-size: 4em; display: block; margin-bottom: 15px;"></i>
                     [ 마을 사진 자리 ]
                 </div>
             </div>
@@ -263,16 +271,16 @@
             <h2 class="title-txt">어떤 곳이 있을까요?</h2>
             <div class="two-col">
                 <div>
-                    <p style="font-size: 1.2em; line-height: 1.6;">우리가 매일 가는 곳들을 떠올려 보세요.</p>
-                    <ul style="font-size: 1.2em; margin-top: 15px; line-height: 1.8; margin-left: 25px;">
+                    <p style="font-size: 1.3em; line-height: 1.6;">우리가 매일 가는 곳들을 떠올려 보세요.</p>
+                    <ul style="font-size: 1.3em; margin-top: 20px; line-height: 1.8; margin-left: 30px;">
                         <li>공부하는 학교</li>
                         <li>물건을 사는 시장</li>
                         <li>편안히 쉬는 공원</li>
                     </ul>
-                    <p style="font-size: 1.2em; margin-top: 15px;">학교 가는 <span class="udl-word" data-tip="집들이 모여 있는 좁은 길">골목</span>도 고장의 모습이에요.</p>
+                    <p style="font-size: 1.3em; margin-top: 20px;">학교 가는 <span class="udl-word" data-tip="집들이 모여 있는 좁은 길">골목</span>도 고장의 모습이에요.</p>
                 </div>
                 <div class="image-placeholder" style="background: #fef08a; border-color: #fde047;">
-                    <i class="fa-solid fa-tree" style="font-size: 3em; display: block; margin-bottom: 10px;"></i>
+                    <i class="fa-solid fa-tree" style="font-size: 4em; display: block; margin-bottom: 15px;"></i>
                     [ 공원 사진 자리 ]
                 </div>
             </div>
@@ -285,13 +293,13 @@
         <div class="slide" id="slide5">
             <h2 class="title-txt">북적북적 전통 시장</h2>
             <div class="two-col">
-                <div class="image-placeholder" style="background: #fed7aa; border-color: #facc15; border-radius: 50%; aspect-ratio: 1; max-width: 250px; min-height: 250px; margin: 0 auto;">
-                    <i class="fa-solid fa-basket-shopping" style="font-size: 3em; display: block; margin-bottom: 10px;"></i>
+                <div class="image-placeholder" style="background: #fed7aa; border-color: #facc15; border-radius: 50%; aspect-ratio: 1; max-width: 300px; min-height: 300px; margin: 0 auto;">
+                    <i class="fa-solid fa-basket-shopping" style="font-size: 4em; display: block; margin-bottom: 15px;"></i>
                     [ 시장 사진 ]
                 </div>
                 <div>
-                    <p style="font-size: 1.2em; line-height: 1.6;">맛있는 음식과 물건을 사고파는 활기찬 <span class="udl-word" data-tip="물건을 사고파는 곳">시장</span>이에요.</p>
-                    <p style="font-size: 1.2em; line-height: 1.6; margin-top: 20px;"><span class="name-var">학생</span>는 시장에서 무엇을 구경하고 싶나요?</p>
+                    <p style="font-size: 1.3em; line-height: 1.6;">맛있는 음식과 물건을 사고파는 활기찬 <span class="udl-word" data-tip="물건을 사고파는 곳">시장</span>이에요.</p>
+                    <p style="font-size: 1.3em; line-height: 1.6; margin-top: 25px;"><span class="name-var">학생</span>는 시장에서 무엇을 구경하고 싶나요?</p>
                 </div>
             </div>
             <div class="footer-bar">
@@ -303,10 +311,10 @@
         <div class="slide" id="slide6">
             <h2 class="title-txt">영상을 보며 확인해요</h2>
             <div style="text-align: center;">
-                <p style="font-size: 1.2em; margin-bottom: 20px;">선생님이 준비한 <span class="udl-word" data-tip="움직이는 그림">영상</span>을 감상해 볼까요?</p>
-                <div style="width: 100%; max-width: 600px; aspect-ratio: 16/9; background: #111; margin: 0 auto; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
-                    <i class="fa-brands fa-youtube" style="font-size: 4em; color: red; margin-bottom: 10px;"></i>
-                    <p style="font-size: 1em;">[ 유튜브 영상 삽입 ]</p>
+                <p style="font-size: 1.3em; margin-bottom: 30px;">선생님이 준비한 <span class="udl-word" data-tip="움직이는 그림">영상</span>을 감상해 볼까요?</p>
+                <div style="width: 100%; max-width: 700px; aspect-ratio: 16/9; background: #111; margin: 0 auto; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
+                    <i class="fa-brands fa-youtube" style="font-size: 5em; color: red; margin-bottom: 15px;"></i>
+                    <p style="font-size: 1.2em;">[ 유튜브 영상 삽입 ]</p>
                 </div>
             </div>
             <div class="footer-bar">
@@ -318,19 +326,19 @@
         <div class="slide" id="slide7">
             <h2 class="title-txt">친구들이 좋아하는 곳</h2>
             <div>
-                <p style="font-size: 1.2em; margin-bottom: 20px;">우리 반 친구들은 어디를 좋아할까요?</p>
-                <div style="display: flex; flex-direction: column; gap: 15px;">
+                <p style="font-size: 1.3em; margin-bottom: 30px;">우리 반 친구들은 어디를 좋아할까요?</p>
+                <div style="display: flex; flex-direction: column; gap: 20px;">
                     <div style="display: flex; align-items: center;">
-                        <span style="width: 60px; font-weight: bold;"><span class="udl-word" data-tip="나무와 풀이 많은 쉼터">공원</span></span>
-                        <div style="height: 30px; background: var(--m-blue); width: 85%; border-radius: 6px; color: white; padding-left: 10px; line-height: 30px; font-weight: bold; font-size: 0.9em;">85%</div>
+                        <span style="width: 80px; font-weight: bold;"><span class="udl-word" data-tip="나무와 풀이 많은 쉼터">공원</span></span>
+                        <div style="height: 40px; background: var(--m-blue); width: 85%; border-radius: 8px; color: white; padding-left: 15px; line-height: 40px; font-weight: bold; font-size: 1em;">85%</div>
                     </div>
                     <div style="display: flex; align-items: center;">
-                        <span style="width: 60px; font-weight: bold;">학교</span>
-                        <div style="height: 30px; background: #3b82f6; width: 60%; border-radius: 6px; color: white; padding-left: 10px; line-height: 30px; font-weight: bold; font-size: 0.9em;">60%</div>
+                        <span style="width: 80px; font-weight: bold;">학교</span>
+                        <div style="height: 40px; background: #3b82f6; width: 60%; border-radius: 8px; color: white; padding-left: 15px; line-height: 40px; font-weight: bold; font-size: 1em;">60%</div>
                     </div>
                     <div style="display: flex; align-items: center;">
-                        <span style="width: 60px; font-weight: bold;">시장</span>
-                        <div style="height: 30px; background: #fbbf24; width: 40%; border-radius: 6px; color: white; padding-left: 10px; line-height: 30px; font-weight: bold; font-size: 0.9em;">40%</div>
+                        <span style="width: 80px; font-weight: bold;">시장</span>
+                        <div style="height: 40px; background: #fbbf24; width: 40%; border-radius: 8px; color: white; padding-left: 15px; line-height: 40px; font-weight: bold; font-size: 1em;">40%</div>
                     </div>
                 </div>
             </div>
@@ -342,8 +350,8 @@
 
         <div class="slide" id="slide8">
             <div style="text-align: center; margin-top: 15vh;">
-                <h1 style="font-size: 3.5em; color: var(--m-gold); margin-bottom: 20px;">하늘에서 봐요! 🛰️</h1>
-                <p style="font-size: 1.3em;"><span class="name-var">학생</span>, <span class="udl-word" data-tip="우리 머리 위에 있는 높은 곳">하늘</span> 위에서 우리 동네를 내려다볼까?</p>
+                <h1 style="font-size: 4em; color: var(--m-gold); margin-bottom: 30px;">하늘에서 봐요! 🛰️</h1>
+                <p style="font-size: 1.5em;"><span class="name-var">학생</span>, <span class="udl-word" data-tip="우리 머리 위에 있는 높은 곳">하늘</span> 위에서 우리 동네를 내려다볼까?</p>
             </div>
             <div class="footer-bar">
                 <button class="btn-prev btn-move" onclick="changeSlide(-1)">이전</button>
@@ -355,10 +363,10 @@
             <h2 class="title-txt">디지털 지도란?</h2>
             <div class="two-col">
                 <div>
-                    <p style="font-size: 1.2em; line-height: 1.6;">하늘 높이 떠 있는 <span class="udl-word" data-tip="우주에서 지구를 찍는 기계">인공위성</span>에서 내려다본 우리 고장의 모습이야.</p>
+                    <p style="font-size: 1.3em; line-height: 1.6;">하늘 높이 떠 있는 <span class="udl-word" data-tip="우주에서 지구를 찍는 기계">인공위성</span>에서 내려다본 우리 고장의 모습이야.</p>
                 </div>
                 <div class="image-placeholder" style="background: #eef9ee; border-color: #cceecc;">
-                    <i class="fa-solid fa-satellite" style="font-size: 4em; color: #555; margin-bottom: 15px;"></i>
+                    <i class="fa-solid fa-satellite" style="font-size: 5em; color: #555; margin-bottom: 20px;"></i>
                     [ 디지털 위성 지도 ]
                 </div>
             </div>
@@ -372,17 +380,17 @@
             <h2 class="title-txt">영상 지도의 장점</h2>
             <div class="tiled-grid">
                 <div class="tile-box">
-                    <i class="fa-solid fa-magnifying-glass-plus" style="font-size: 2.5em; color: var(--m-blue); margin-bottom: 15px;"></i>
-                    <h3 style="font-size: 1.1em;">확대와 축소</h3>
+                    <i class="fa-solid fa-magnifying-glass-plus" style="font-size: 3em; color: var(--m-blue); margin-bottom: 20px;"></i>
+                    <h3 style="font-size: 1.2em;">확대와 축소</h3>
                 </div>
                 <div class="tile-box">
-                    <i class="fa-solid fa-camera" style="font-size: 2.5em; color: #10b981; margin-bottom: 15px;"></i>
-                    <h3 style="font-size: 1.1em;">진짜 모습</h3>
+                    <i class="fa-solid fa-camera" style="font-size: 3em; color: #10b981; margin-bottom: 20px;"></i>
+                    <h3 style="font-size: 1.2em;">진짜 모습</h3>
                 </div>
                 <div class="tile-box">
-                    <i class="fa-solid fa-location-dot" style="font-size: 2.5em; color: #ef4444; margin-bottom: 15px;"></i>
-                    <h3 style="font-size: 1.1em;">길 찾기</h3>
-                    <p style="font-size: 0.9em; margin-top: 10px;"><span class="udl-word" data-tip="글자를 써서 찾는 일">검색</span> 가능</p>
+                    <i class="fa-solid fa-location-dot" style="font-size: 3em; color: #ef4444; margin-bottom: 20px;"></i>
+                    <h3 style="font-size: 1.2em;">길 찾기</h3>
+                    <p style="font-size: 1em; margin-top: 15px;"><span class="udl-word" data-tip="글자를 써서 찾는 일">검색</span> 가능</p>
                 </div>
             </div>
             <div class="footer-bar">
@@ -395,14 +403,14 @@
             <h2 class="title-txt">지도 비교하기</h2>
             <div class="two-col">
                 <div class="tile-box">
-                    <i class="fa-solid fa-pencil" style="font-size: 2.5em; color: #94a3b8; margin-bottom: 15px;"></i>
-                    <h3 style="font-size: 1.2em;">그림 지도</h3>
-                    <p style="margin-top: 10px; font-size: 1em;"><span class="udl-word" data-tip="머릿속에 떠오르는 느낌">생각</span>과 느낌을 그려요.</p>
+                    <i class="fa-solid fa-pencil" style="font-size: 3em; color: #94a3b8; margin-bottom: 20px;"></i>
+                    <h3 style="font-size: 1.3em;">그림 지도</h3>
+                    <p style="margin-top: 15px; font-size: 1.1em;"><span class="udl-word" data-tip="머릿속에 떠오르는 느낌">생각</span>과 느낌을 그려요.</p>
                 </div>
                 <div class="tile-box">
-                    <i class="fa-solid fa-satellite" style="font-size: 2.5em; color: var(--m-blue); margin-bottom: 15px;"></i>
-                    <h3 style="font-size: 1.2em;">영상 지도</h3>
-                    <p style="margin-top: 10px; font-size: 1em;">실제 모습 그대로 볼 수 있어요.</p>
+                    <i class="fa-solid fa-satellite" style="font-size: 3em; color: var(--m-blue); margin-bottom: 20px;"></i>
+                    <h3 style="font-size: 1.3em;">영상 지도</h3>
+                    <p style="margin-top: 15px; font-size: 1.1em;">실제 모습 그대로 볼 수 있어요.</p>
                 </div>
             </div>
             <div class="footer-bar">
@@ -413,16 +421,16 @@
 
         <div class="slide" id="slide12">
             <h2 class="title-txt">우리를 돕는 곳</h2>
-            <p style="font-size: 1.2em; margin-bottom: 20px;">우리 동네에는 우리를 도와주는 <span class="udl-word" data-tip="나라에서 세운 도움 기관">공공기관</span>이 많아요.</p>
+            <p style="font-size: 1.3em; margin-bottom: 30px;">우리 동네에는 우리를 도와주는 <span class="udl-word" data-tip="나라에서 세운 도움 기관">공공기관</span>이 많아요.</p>
             <div class="tiled-grid">
-                <div class="tile-box" style="padding: 15px;">
-                    <div class="image-placeholder" style="min-height: 100px; margin-bottom: 10px; font-size: 0.9em;">[ 학교 ]</div>
+                <div class="tile-box" style="padding: 20px;">
+                    <div class="image-placeholder" style="min-height: 150px; margin-bottom: 15px; font-size: 1em;">[ 학교 ]</div>
                 </div>
-                <div class="tile-box" style="padding: 15px;">
-                    <div class="image-placeholder" style="min-height: 100px; margin-bottom: 10px; font-size: 0.9em;">[ 소방서 ]</div>
+                <div class="tile-box" style="padding: 20px;">
+                    <div class="image-placeholder" style="min-height: 150px; margin-bottom: 15px; font-size: 1em;">[ 소방서 ]</div>
                 </div>
-                <div class="tile-box" style="padding: 15px;">
-                    <div class="image-placeholder" style="min-height: 100px; margin-bottom: 10px; font-size: 0.9em;">[ 경찰서 ]</div>
+                <div class="tile-box" style="padding: 20px;">
+                    <div class="image-placeholder" style="min-height: 150px; margin-bottom: 15px; font-size: 1em;">[ 경찰서 ]</div>
                 </div>
             </div>
             <div class="footer-bar">
@@ -434,7 +442,7 @@
         <div class="slide" id="slide13">
             <h2 class="title-txt">도와주는 곳 찾기 퀴즈</h2>
             <div>
-                <p style="font-size: 1.3em; margin-bottom: 20px; font-weight: bold;">Q. 불이 났을 때 도와주는 <span class="udl-word" data-tip="불을 끄고 사람을 구하는 곳">소방서</span>는 몇 번일까?</p>
+                <p style="font-size: 1.4em; margin-bottom: 30px; font-weight: bold;">Q. 불이 났을 때 도와주는 <span class="udl-word" data-tip="불을 끄고 사람을 구하는 곳">소방서</span>는 몇 번일까?</p>
                 <div class="quiz-opt" onclick="checkQuiz(false, '마트는 맛있는 음식과 물건을 사는 곳이에요.')">1. 대형 마트</div>
                 <div class="quiz-opt" onclick="checkQuiz(true, '정답! 소방관님이 불을 꺼주셔요!')">2. 119 소방서</div>
             </div>
@@ -446,16 +454,16 @@
 
         <div class="slide" id="slide14">
             <h2 class="title-txt">오늘의 공부 소감</h2>
-            <p style="font-size: 1.2em; text-align: center;"><span class="name-var">학생</span>, 오늘 공부를 마친 너의 <span class="udl-word" data-tip="어떤 일을 하고 난 느낌">소감</span>을 클릭해 줘!</p>
-            <div style="display: flex; justify-content: center; gap: 5%; margin-top: 30px;">
+            <p style="font-size: 1.3em; text-align: center;"><span class="name-var">학생</span>, 오늘 공부를 마친 너의 <span class="udl-word" data-tip="어떤 일을 하고 난 느낌">소감</span>을 클릭해 줘!</p>
+            <div style="display: flex; justify-content: center; gap: 8%; margin-top: 50px;">
                 <div style="cursor: pointer; text-align: center;" onclick="popUI('정말 최고였어! 선생님도 기뻐.')">
-                    <span style="font-size: 4em;">😄</span><p style="font-size: 1.1em; font-weight: bold; margin-top: 10px;">좋았어요!</p>
+                    <span style="font-size: 5em;">😄</span><p style="font-size: 1.2em; font-weight: bold; margin-top: 15px;">좋았어요!</p>
                 </div>
                 <div style="cursor: pointer; text-align: center;" onclick="popUI('보통이었구나! 다음엔 더 재미있게 하자.')">
-                    <span style="font-size: 4em;">😐</span><p style="font-size: 1.1em; font-weight: bold; margin-top: 10px;">보통이에요</p>
+                    <span style="font-size: 5em;">😐</span><p style="font-size: 1.2em; font-weight: bold; margin-top: 15px;">보통이에요</p>
                 </div>
                 <div style="cursor: pointer; text-align: center;" onclick="popUI('어려웠구나! 다시 천천히 알려줄게.')">
-                    <span style="font-size: 4em;">🤔</span><p style="font-size: 1.1em; font-weight: bold; margin-top: 10px;">어려웠어요</p>
+                    <span style="font-size: 5em;">🤔</span><p style="font-size: 1.2em; font-weight: bold; margin-top: 15px;">어려웠어요</p>
                 </div>
             </div>
             <div class="footer-bar">
@@ -466,8 +474,8 @@
 
         <div class="slide" id="slide15">
             <div style="text-align: center; margin-top: 10vh;">
-                <h1 style="font-size: 3em; color: var(--m-blue); margin-bottom: 20px;">오늘 공부 <span class="udl-word" data-tip="어떤 일을 끝까지 해냄">완료</span>!</h1>
-                <p style="font-size: 1.4em; margin-bottom: 30px;"><span class="name-var">학생</span>, 정말 훌륭하게 해냈어!</p>
+                <h1 style="font-size: 3.5em; color: var(--m-blue); margin-bottom: 30px;">오늘 공부 <span class="udl-word" data-tip="어떤 일을 끝까지 해냄">완료</span>!</h1>
+                <p style="font-size: 1.6em; margin-bottom: 40px;"><span class="name-var">학생</span>, 정말 훌륭하게 해냈어!</p>
                 <span class="trophy">🏆</span>
             </div>
             <div class="footer-bar">
@@ -483,7 +491,6 @@
         let studentName = "";
         let isAudioOn = false;
 
-        // 1. 목차 생성
         const titles = ["여행 시작", "공부 목표", "고장의 정의", "장소 찾기", "시장 여행", "영상 학습", "인기 장소", "지도 시작", "디지털 지도", "지도의 장점", "지도 비교", "공공기관", "퀴즈 타임", "공부 소감", "학습 완료"];
         const sidebarList = document.getElementById('sidebar-list');
         titles.forEach((t, i) => {
@@ -496,7 +503,6 @@
         });
         document.getElementById('nav-1').classList.add('active'); 
 
-        // 2. 시작 및 로직
         function doStart() {
             const input = document.getElementById('name-in').value.trim();
             if(!input) { popUI("이름을 입력해주세요!"); return; }
@@ -546,12 +552,10 @@
             if(n === 15) fireConfetti();
         }
 
-        // 3. UDL 글씨 크기 조절 (반응형 px 조절)
         function updateZoom(addPx) {
             document.documentElement.style.setProperty('--zoom-inc', addPx + 'px');
         }
 
-        // 4. 소리 모드 제어
         function onAudioToggle() {
             isAudioOn = document.getElementById('audio-toggle').checked;
             const statusLabel = document.getElementById('audio-status');
@@ -579,7 +583,6 @@
             window.speechSynthesis.speak(msg);
         }
 
-        // 5. 모달 및 단어 설명
         function popUI(msg) {
             document.getElementById('modal-msg').innerText = msg;
             document.getElementById('ui-modal-overlay').style.display = 'flex';
@@ -603,11 +606,9 @@
             }
         }
 
-        // 6. 사이드바 제어
         function openSidebar() { document.getElementById('sidebar').classList.add('open'); }
         function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
 
-        // 7. 폭죽 (반응형 윈도우 너비 기준)
         function fireConfetti() {
             const container = document.getElementById('confetti-container');
             container.style.display = 'block';
